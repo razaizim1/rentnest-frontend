@@ -1,17 +1,6 @@
-import { cookies } from "next/headers";
 import SignInFrom from "../_components/SignInFrom"
-import { redirect } from "next/navigation";
-
-
 
 const LoginPage = async () => {
-  const cookieStore = await cookies();
-
-  const accessToken = cookieStore.get("accessToken");
-
-  if (accessToken) {
-    redirect("/");
-  }
   return (
 
     <>

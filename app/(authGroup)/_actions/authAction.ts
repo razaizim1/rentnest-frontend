@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 type SignInState = {
     success: boolean;
@@ -46,7 +47,18 @@ export const singInFrom = async (prevState: SignInState, formData: FormData) => 
             sameSite: 'lax',
         });
 
-        redirect("/", "replace");
+        const decodedToken = jwt.decode(result.data.accessToken) as JwtPayload;
+        console.log(decodedToken);
+
+        if (decodedToken.role === "ADMIN") {
+            redirect("/admin-dashboard", "replace");
+        } else if (decodedToken.role === "LANDLORD") {
+            redirect("/landlord-dashboard", "replace");
+        } else {
+            redirect("/dashboard", "replace");
+        }
+
+        // redirect("/", "replace");
 
     }
     console.log(result);

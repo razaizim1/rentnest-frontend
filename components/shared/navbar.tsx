@@ -78,7 +78,7 @@ export function Navbar({ user }: userProps) {
                     {/* User Dropdown */}
 
 
-                    {user?.data && (
+                    {user?.data ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <div className="cursor-pointer">
@@ -87,33 +87,41 @@ export function Navbar({ user }: userProps) {
                                     </div>
                                 </div>
                             </DropdownMenuTrigger>
+
                             <DropdownMenuContent align="end" className="w-56">
                                 <DropdownMenuLabel className="font-normal">
                                     <div className="flex flex-col gap-1">
                                         <p className="text-sm font-medium">
-                                            {user?.data?.name || "User"
-                                            }
+                                            {user.data.name}
                                         </p>
                                         <p className="text-xs text-muted-foreground">
-                                            {user?.data?.email || "User Email"}
+                                            {user.data.email}
                                         </p>
                                     </div>
                                 </DropdownMenuLabel>
+
                                 <DropdownMenuSeparator />
+
                                 <DropdownMenuItem>
-                                    <Settings className="w-4 h-4 mr-2" />
+                                    <Settings className="mr-2 h-4 w-4" />
                                     <span>Settings</span>
                                 </DropdownMenuItem>
+
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onSelect={() => handleUserMenuAction("logout")}>
-                                    <LogOut className="w-4 h-4 mr-2" />
+
+                                <DropdownMenuItem
+                                    onSelect={() => handleUserMenuAction("logout")}
+                                >
+                                    <LogOut className="mr-2 h-4 w-4" />
                                     <span>Log out</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                    )}
-                    {!user?.data && (
-                        <Link href="/login" className="text-foreground hover:text-primary transition-colors text-sm font-medium">
+                    ) : (
+                        <Link
+                            href="/login"
+                            className="text-sm font-medium text-foreground transition-colors hover:text-primary"
+                        >
                             Login
                         </Link>
                     )}
