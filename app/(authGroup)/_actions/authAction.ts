@@ -14,7 +14,6 @@ type SignInState = {
     }
 }
 export const singInFrom = async (prevState: SignInState, formData: FormData) => {
-    console.log(formData);
 
     const email = formData.get('email');
     const password = formData.get('password');
@@ -48,7 +47,6 @@ export const singInFrom = async (prevState: SignInState, formData: FormData) => 
         });
 
         const decodedToken = jwt.decode(result.data.accessToken) as JwtPayload;
-        console.log(decodedToken);
 
         if (decodedToken.role === "ADMIN") {
             redirect("/admin-dashboard", "replace");
@@ -61,7 +59,6 @@ export const singInFrom = async (prevState: SignInState, formData: FormData) => 
         // redirect("/", "replace");
 
     }
-    console.log(result);
     return result;
 }
 
@@ -82,8 +79,8 @@ type RegisterState = {
 
 export const registerForm = async (prevState: RegisterState, formData: FormData) => {
     try {
-        const allEntries = Object.fromEntries(formData.entries());
-        console.log("📋 All FormData entries:", allEntries);
+        // const allEntries = Object.fromEntries(formData.entries());
+        // console.log("📋 All FormData entries:", allEntries);
 
         const email = formData.get('email');
         const password = formData.get('password');

@@ -2,7 +2,7 @@ import { IProperty } from "@/lib/types";
 import { PropertyCard } from "./PropertyCard";
 
 export const PropertyGrid = (properties: { properties: IProperty[] }) => {
-    console.log(properties);
+
     return (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {properties.properties.map((property) => (

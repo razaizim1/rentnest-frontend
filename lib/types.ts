@@ -21,3 +21,9 @@ export interface IProperty {
         reviews: number;
     };
 }
+
+export type ParamsWithId = {
+    params: Promise<{
+        id: string;
+    }>;
+};

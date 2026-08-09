@@ -12,7 +12,6 @@ export const PropertyCard = ({
 }: {
     property: IProperty;
 }) => {
-    console.log(property.image);
     return (
         <Card className="overflow-hidden rounded-2xl transition hover:-translate-y-1 hover:shadow-xl">
 
