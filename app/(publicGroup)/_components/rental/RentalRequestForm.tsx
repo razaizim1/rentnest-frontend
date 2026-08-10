@@ -16,7 +16,6 @@ type RentalRequestFormProps = {
 export const RentalRequestForm = ({
     propertyId,
 }: RentalRequestFormProps) => {
-    console.log("propertyId:", propertyId);
 
     const [state, action, pending] = useActionState(
         createRental,

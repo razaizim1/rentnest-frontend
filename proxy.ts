@@ -6,16 +6,14 @@ import { cookies } from 'next/headers'
 import { getNewAccessToken } from './service/refreshToken'
 
 const AUTH_ROUTES = ["/login", "/register"]
-const PUBLIC_ROUTES = ["/", "/properties", "/properties/[id]", "/login", "/register"]
+const PUBLIC_ROUTES = ["/", "/properties", "/login", "/register"]
+const TENANT_ROUTES = ["/dashboard", "/properties",];
 
 // This function can be marked `async` if using `await` inside
 export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
 
     const cookieStore = await cookies();
-    // const accessToken = cookieStore.get("accessToken")?.value;
-
-
 
     let accessToken = request.cookies.get("accessToken")?.value;
     const refreshToken = request.cookies.get("refreshToken")?.value;
@@ -39,8 +37,6 @@ export async function proxy(request: NextRequest) {
 
             accessToken = newAccessToken;
             decodedAccessToken = jwtUtils.verifyToken(accessToken!, process.env.JWT_ACCESS_SECRET as string);
-
-
         }
     }
 
@@ -85,6 +81,14 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL('/not-found', request.url));
     } else if (pathname.startsWith("/admin-dashboard") && userRole !== "ADMIN") {
         return NextResponse.redirect(new URL('/not-found', request.url));
+    }
+
+
+    if (
+        pathname.match(/^\/properties\/[^/]+\/rent$/) &&
+        userRole !== "TENANT"
+    ) {
+        return NextResponse.redirect(new URL("/not-found", request.url));
     }
 
 

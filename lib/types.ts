@@ -27,3 +27,28 @@ export type ParamsWithId = {
         id: string;
     }>;
 };
+
+export interface IUser {
+    id: string;
+    name: string;
+    email: string;
+    phone: string;
+    avatar: string | null;
+    role: "TENANT" | "LANDLORD" | "ADMIN";
+    status: string;
+    createdAt: string;
+}
+
+export interface IRental {
+    id: string;
+    moveInDate: string;
+    status: string;
+
+    property: {
+        id: string;
+        title: string;
+        image: string;
+        location: string;
+        rentAmount: number;
+    };
+}

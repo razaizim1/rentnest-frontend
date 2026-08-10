@@ -20,6 +20,8 @@ import {
 
 import { getProperty } from "../../_actions/getProperty";
 import { ParamsWithId } from "@/lib/types";
+import { getMe } from "@/service/getMe";
+import { checkRentalStatus } from "@/app/(dashboardGroup)/dashboard/_actions/checkRentalStatus";
 
 
 
@@ -28,10 +30,20 @@ export default async function PropertyDetailsPage({
 }: ParamsWithId) {
 
     const { id } = await params;
-
     const result = await getProperty(id);
-
     const property = result?.data;
+    const userResult = await getMe();
+    const user = userResult?.data;
+    const rentalStatus = await checkRentalStatus(id);
+    let hasRequested = false;
+    let status = null;
+
+    if (user) {
+        const rentalStatus = await checkRentalStatus(id);
+
+        hasRequested = rentalStatus?.data?.hasRequested ?? false;
+        status = rentalStatus?.data?.status ?? null;
+    }
 
     return (
         <div className="container mx-auto py-10">
@@ -246,9 +258,52 @@ export default async function PropertyDetailsPage({
 
                     </Card>
 
-                    <Button asChild className="h-12 w-full text-base" >
-                        <Link href={`/properties/${id}/rent`}>Request Rental</Link>
-                    </Button>
+                    {/* User not logged in */}
+                    {!user && (
+                        <Button asChild className="w-full">
+                            <Link href="/login">
+                                Login to Request
+                            </Link>
+                        </Button>
+                    )}
+
+                    {/* Tenant can request */}
+                    {user?.role === "TENANT" && !hasRequested && (
+                        <Button asChild className="w-full">
+                            <Link href={`/properties/${id}/rent`}>
+                                Request Rental
+                            </Link>
+                        </Button>
+                    )}
+
+                    {/* Request Pending */}
+                    {user?.role === "TENANT" &&
+                        hasRequested &&
+                        status === "PENDING" && (
+                            <Button disabled className="w-full">
+                                Request Sent
+                            </Button>
+                        )}
+
+                    {/* Approved */}
+                    {user?.role === "TENANT" &&
+                        hasRequested &&
+                        status === "APPROVED" && (
+                            <Button disabled className="w-full">
+                                Rental Approved
+                            </Button>
+                        )}
+
+                    {/* Rejected */}
+                    {user?.role === "TENANT" &&
+                        hasRequested &&
+                        status === "REJECTED" && (
+                            <Button asChild className="w-full">
+                                <Link href={`/properties/${id}/rent`}>
+                                    Request Again
+                                </Link>
+                            </Button>
+                        )}
 
                 </div>
 
