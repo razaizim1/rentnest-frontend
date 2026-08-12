@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 import { IRental } from "@/lib/types";
+import { PayButton } from "@/app/(publicGroup)/_components/payment/PayButton";
 
 type RentalCardProps = {
     rental: IRental;
@@ -18,6 +19,9 @@ export default function RentalCard({
 }: RentalCardProps) {
 
     const property = rental.property;
+    console.log(rental);
+
+
 
     return (
         <Card className="overflow-hidden">
@@ -96,9 +100,7 @@ export default function RentalCard({
                     </Button>
 
                     {rental.status === "APPROVED" && (
-                        <Button className="flex-1">
-                            Pay Now
-                        </Button>
+                        <PayButton rentalRequestId={rental.id} />
                     )}
 
                 </div>

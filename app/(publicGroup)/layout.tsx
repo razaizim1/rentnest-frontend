@@ -10,6 +10,7 @@ const PublicGroupLayout = async (
     }
 ) => {
     const user = await getMe();
+    
     return (
         <div>
             <Navbar user={user} />
