@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 import { IProperty } from "@/lib/types";
+import { DeletePropertyButton } from "./DeletePropertyButton";
 
 type LandlordPropertyCardProps = {
     property: IProperty;
@@ -33,11 +34,10 @@ export function LandlordPropertyCard({
                 />
 
                 <Badge
-                    className={`absolute right-4 top-4 ${
-                        property.available
-                            ? "bg-green-600 text-white"
-                            : "bg-red-600 text-white"
-                    }`}
+                    className={`absolute right-4 top-4 ${property.available
+                        ? "bg-green-600 text-white"
+                        : "bg-red-600 text-white"
+                        }`}
                 >
                     {property.available
                         ? "Available"
@@ -103,14 +103,9 @@ export function LandlordPropertyCard({
                         </Link>
                     </Button>
 
-                    <Button
-                        variant="destructive"
-                        className="flex-1"
-                        type="button"
-                    >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
-                    </Button>
+                    <DeletePropertyButton
+                        propertyId={property.id}
+                    />
                 </div>
             </CardContent>
         </Card>

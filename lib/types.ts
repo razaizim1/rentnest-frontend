@@ -79,3 +79,30 @@ export type LandlordStatsProps = {
     approvedRequests: number;
     activeRequests: number;
 };
+
+export type IRentalRequest = {
+    id: string;
+    status:
+    | "PENDING"
+    | "APPROVED"
+    | "REJECTED"
+    | "ACTIVE"
+    | "COMPLETED";
+
+    moveInDate: string;
+    message?: string | null;
+
+    tenant: {
+        id: string;
+        name: string;
+        email: string;
+    };
+
+    property: {
+        id: string;
+        title: string;
+        location: string;
+        rentAmount: number;
+        image: string;
+    };
+};
