@@ -1,12 +1,23 @@
 
+import { PropertiesPageProps } from "@/lib/types";
 import { getProperties } from "../_actions/getProperties";
 import { PropertyGrid } from "../_components/property/PropertyGrid";
+import { PropertySearch } from "../_components/property/PropertySearch";
+import { PropertyEmpty } from "../_components/property/PropertyEmpty";
 
-export default async function PropertiesPage() {
-    // Fetch properties at page level (Server Component — zero client JS needed)
-    const result = await getProperties();
-    const properties = result?.data || result?.properties || [];
-    // console.log(properties.data[0].title);
+export default async function PropertiesPage({
+    searchParams,
+}: PropertiesPageProps) {
+    const params = await searchParams;
+
+    const result = await getProperties({
+        search: params.search,
+        location: params.location,
+        price: params.price,
+        type: params.type,
+    });
+
+    const properties = result?.data?.data ?? [];
 
     return (
         <div className="container mx-auto px-4 py-10">
@@ -18,10 +29,14 @@ export default async function PropertiesPage() {
                     Browse from our latest rental properties.
                 </p>
             </div>
+            <PropertySearch />
 
-            {
-                <PropertyGrid properties={properties.data} />
-            }
+            {properties.length > 0 ? (
+                <PropertyGrid properties={properties} />
+            ) : (
+                <PropertyEmpty />
+            )}
+
         </div>
     );
 }

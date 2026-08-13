@@ -52,3 +52,19 @@ export interface IRental {
         rentAmount: number;
     };
 }
+
+export type GetPropertiesParams = {
+    search?: string;
+    location?: string;
+    price?: string;
+    type?: string;
+};
+
+export type PropertiesPageProps = {
+    searchParams: Promise<{
+        search?: string;
+        location?: string;
+        price?: string;
+        type?: string;
+    }>;
+};
