@@ -5,6 +5,7 @@ import { PropertyGrid } from "../_components/property/PropertyGrid";
 import { PropertySearch } from "../_components/property/PropertySearch";
 import { PropertyEmpty } from "../_components/property/PropertyEmpty";
 import { PropertyFilter } from "../_components/property/PropertyFilter";
+import { PropertyPagination } from "../_components/property/PropertyPagination";
 
 export default async function PropertiesPage({
     searchParams,
@@ -16,10 +17,16 @@ export default async function PropertiesPage({
         location: params.location,
         price: params.price,
         type: params.type,
+        page: params.page || "1",
+        limit: params.limit || "6",
     });
 
     const properties = result?.data?.data ?? [];
-    const total = result?.data?.meta?.total ?? 0;
+    const meta = result?.data?.meta;
+    const total = Number(meta?.total || 0);
+    const currentPage = Number(meta?.page || 1);
+    const pageSize = Number(meta?.pageSize || 6);
+    const totalPages = Math.ceil(total / pageSize);
 
     const hasFilter =
         Boolean(params.search) ||
@@ -98,6 +105,12 @@ export default async function PropertiesPage({
                 ) : (
                     <PropertyEmpty />
                 )}
+
+                {/* Pagination */}
+                <PropertyPagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                />
 
             </section>
         </main>
