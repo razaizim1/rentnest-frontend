@@ -1,9 +1,10 @@
-
 import { PropertiesPageProps } from "@/lib/types";
+
 import { getProperties } from "../_actions/getProperties";
 import { PropertyGrid } from "../_components/property/PropertyGrid";
 import { PropertySearch } from "../_components/property/PropertySearch";
 import { PropertyEmpty } from "../_components/property/PropertyEmpty";
+import { PropertyFilter } from "../_components/property/PropertyFilter";
 
 export default async function PropertiesPage({
     searchParams,
@@ -18,25 +19,87 @@ export default async function PropertiesPage({
     });
 
     const properties = result?.data?.data ?? [];
+    const total = result?.data?.meta?.total ?? 0;
+
+    const hasFilter =
+        Boolean(params.search) ||
+        Boolean(params.location) ||
+        Boolean(params.price) ||
+        Boolean(params.type);
 
     return (
-        <div className="container mx-auto px-4 py-10">
-            <div className="mb-10">
-                <h1 className="text-4xl font-bold">
-                    Find Your Perfect Home
-                </h1>
-                <p className="mt-2 text-muted-foreground">
-                    Browse from our latest rental properties.
-                </p>
-            </div>
-            <PropertySearch />
+        <main className="min-h-screen bg-muted/20">
 
-            {properties.length > 0 ? (
-                <PropertyGrid properties={properties} />
-            ) : (
-                <PropertyEmpty />
-            )}
+            {/* Hero / Header */}
+            <section className="border-b bg-background">
+                <div className="container mx-auto px-4 py-14 sm:py-16 lg:py-20">
 
-        </div>
+                    <div className="mx-auto max-w-3xl text-center">
+                        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+                            Find Your Next Home
+                        </p>
+
+                        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+                            Find Your Perfect Home
+                        </h1>
+
+                        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
+                            Discover comfortable rental properties in your
+                            preferred location, budget, and property type.
+                        </p>
+                    </div>
+
+                    <div className="mx-auto mt-8 max-w-3xl">
+                        <div className="rounded-2xl border bg-background p-2 shadow-lg">
+                            <PropertySearch />
+                        </div>
+
+                        <div className="mx-auto mt-4 max-w-5xl">
+                            <PropertyFilter />
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            {/* Properties */}
+            <section className="container mx-auto px-4 py-10 sm:py-12">
+
+                {/* Result Header */}
+                <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+
+                    <div>
+                        <p className="text-sm font-medium text-primary">
+                            {hasFilter ? "Search Results" : "Latest Listings"}
+                        </p>
+
+                        <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
+                            {hasFilter
+                                ? "Properties matching your search"
+                                : "Explore Rental Properties"}
+                        </h2>
+
+                        <p className="mt-2 text-sm text-muted-foreground">
+                            {total} {total === 1 ? "property" : "properties"} available
+                        </p>
+                    </div>
+
+                    {hasFilter && (
+                        <div className="rounded-full border bg-background px-4 py-2 text-sm text-muted-foreground">
+                            Filters applied
+                        </div>
+                    )}
+
+                </div>
+
+                {/* Property Grid / Empty State */}
+                {properties.length > 0 ? (
+                    <PropertyGrid properties={properties} />
+                ) : (
+                    <PropertyEmpty />
+                )}
+
+            </section>
+        </main>
     );
 }

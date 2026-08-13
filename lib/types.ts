@@ -58,6 +58,8 @@ export type GetPropertiesParams = {
     location?: string;
     price?: string;
     type?: string;
+    page?: string;
+    limit?: string;
 };
 
 export type PropertiesPageProps = {
@@ -66,5 +68,7 @@ export type PropertiesPageProps = {
         location?: string;
         price?: string;
         type?: string;
+        page?: string;
+        limit?: string;
     }>;
 };

@@ -30,23 +30,33 @@ export function PropertyFilter() {
     );
 
     const handleFilter = () => {
-        const params = new URLSearchParams();
+        const params = new URLSearchParams(
+            searchParams.toString()
+        );
 
         if (location.trim()) {
             params.set("location", location.trim());
+        } else {
+            params.delete("location");
         }
 
-        if (price) {
-            params.set("price", price);
+        if (price.trim()) {
+            params.set("price", price.trim());
+        } else {
+            params.delete("price");
         }
 
         if (type) {
             params.set("type", type);
+        } else {
+            params.delete("type");
         }
+
+        params.delete("page");
 
         const query = params.toString();
 
-        router.push(
+        router.replace(
             query
                 ? `/properties?${query}`
                 : "/properties"
@@ -58,12 +68,27 @@ export function PropertyFilter() {
         setPrice("");
         setType("");
 
-        router.push("/properties");
+        const params = new URLSearchParams(
+            searchParams.toString()
+        );
+
+        params.delete("location");
+        params.delete("price");
+        params.delete("type");
+        params.delete("page");
+
+        const query = params.toString();
+
+        router.replace(
+            query
+                ? `/properties?${query}`
+                : "/properties"
+        );
     };
 
     return (
         <div className="rounded-2xl border bg-card p-5 shadow-sm">
-            <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 
                 {/* Location */}
                 <div className="space-y-2">
@@ -88,6 +113,7 @@ export function PropertyFilter() {
 
                     <Input
                         type="number"
+                        min="0"
                         value={price}
                         onChange={(e) =>
                             setPrice(e.target.value)
@@ -138,10 +164,10 @@ export function PropertyFilter() {
                 <div className="flex items-end gap-2">
                     <Button
                         type="button"
-                        className="flex-1"
                         onClick={handleFilter}
+                        className="flex-1"
                     >
-                        Filter
+                        Apply Filter
                     </Button>
 
                     <Button

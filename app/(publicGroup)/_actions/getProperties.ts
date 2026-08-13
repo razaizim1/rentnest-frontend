@@ -21,6 +21,14 @@ export const getProperties = async (params: GetPropertiesParams = {}) => {
         searchParams.set("type", params.type);
     }
 
+    if (params.page) {
+        searchParams.set("page", params.page);
+    }
+
+    if (params.limit) {
+        searchParams.set("limit", params.limit);
+    }
+
     const query = searchParams.toString();
 
     const url = `${process.env.BACKEND_API_URL}/api/properties${query ? `?${query}` : ""

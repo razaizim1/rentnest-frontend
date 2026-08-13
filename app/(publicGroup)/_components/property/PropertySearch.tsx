@@ -45,10 +45,10 @@ export function PropertySearch() {
     }, [search, currentSearch, searchParams, router]);
 
     return (
-        <div className="relative w-full">
+        <div className="relative">
             <Search
-                size={18}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                size={20}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
 
             <Input
@@ -56,7 +56,7 @@ export function PropertySearch() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by property name or location..."
-                className="h-11 pl-10"
+                className="h-14 rounded-xl border-0 bg-transparent pl-12 pr-4 text-base shadow-none focus-visible:ring-0"
             />
         </div>
     );
