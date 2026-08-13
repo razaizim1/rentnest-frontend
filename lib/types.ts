@@ -72,3 +72,10 @@ export type PropertiesPageProps = {
         limit?: string;
     }>;
 };
+
+export type LandlordStatsProps = {
+    totalProperties: number;
+    pendingRequests: number;
+    approvedRequests: number;
+    activeRequests: number;
+};
