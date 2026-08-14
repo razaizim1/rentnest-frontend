@@ -106,3 +106,10 @@ export type IRentalRequest = {
         image: string;
     };
 };
+
+export type UpdatePropertyState = {
+    success: boolean;
+    statusCode?: number;
+    message: string;
+    data?: unknown;
+};

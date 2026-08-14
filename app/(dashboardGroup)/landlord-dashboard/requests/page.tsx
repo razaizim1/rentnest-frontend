@@ -2,6 +2,8 @@ import { IRentalRequest } from "@/lib/types";
 import { getLandlordRequests } from "../_actions/getLandlordRequests";
 import { RentalRequestCard } from "../_components/RentalRequestCard";
 import { RentalRequestEmpty } from "../_components/RentalRequestEmpty";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default async function RentalRequestsPage() {
     const result = await getLandlordRequests();
@@ -10,7 +12,11 @@ export default async function RentalRequestsPage() {
 
     return (
         <div className="space-y-8">
-
+            <Button variant="ghost" asChild>
+                <Link href="/landlord-dashboard">
+                    ← Back to Dashboard
+                </Link>
+            </Button>
             <div>
                 <p className="text-sm font-medium text-primary">
                     Landlord Dashboard

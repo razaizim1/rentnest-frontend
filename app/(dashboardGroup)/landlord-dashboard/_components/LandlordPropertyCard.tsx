@@ -1,15 +1,12 @@
+import { EditPropertyDialog } from "./EditPropertyDialog";
 import Image from "next/image";
-import Link from "next/link";
 import {
     Bath,
     BedDouble,
     MapPin,
-    Pencil,
-    Trash2,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 import { IProperty } from "@/lib/types";
@@ -17,10 +14,15 @@ import { DeletePropertyButton } from "./DeletePropertyButton";
 
 type LandlordPropertyCardProps = {
     property: IProperty;
+    categories: {
+        id: string;
+        name: string;
+    }[];
 };
 
 export function LandlordPropertyCard({
     property,
+    categories,
 }: LandlordPropertyCardProps) {
     return (
         <Card className="overflow-hidden rounded-2xl">
@@ -90,18 +92,10 @@ export function LandlordPropertyCard({
                 </div>
 
                 <div className="flex gap-2">
-                    <Button
-                        variant="outline"
-                        className="flex-1"
-                        asChild
-                    >
-                        <Link
-                            href={`/landlord-dashboard/properties/${property.id}/edit`}
-                        >
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit
-                        </Link>
-                    </Button>
+                    <EditPropertyDialog
+                        property={property}
+                        categories={categories}
+                    />
 
                     <DeletePropertyButton
                         propertyId={property.id}
