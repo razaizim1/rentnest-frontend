@@ -43,6 +43,7 @@ export interface IRental {
     id: string;
     moveInDate: string;
     status: string;
+    hasReviewed?: boolean;
 
     property: {
         id: string;
@@ -113,3 +114,15 @@ export type UpdatePropertyState = {
     message: string;
     data?: unknown;
 };
+
+export interface IReview {
+    id: string;
+    rating: number;
+    comment: string;
+    createdAt: string;
+    tenant: {
+        id: string;
+        name: string;
+        avatar?: string | null;
+    };
+}

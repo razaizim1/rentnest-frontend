@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 import { IRental } from "@/lib/types";
 import { PayButton } from "@/app/(publicGroup)/_components/payment/PayButton";
+import { LeaveReviewDialog } from "@/app/(publicGroup)/_components/property/LeaveReviewDialog";
 
 type RentalCardProps = {
     rental: IRental;
@@ -24,7 +25,7 @@ export default function RentalCard({
 
 
     return (
-        <Card className="overflow-hidden">
+        <Card id="reviews" className="overflow-hidden">
 
 
             <div className="relative">
@@ -87,8 +88,7 @@ export default function RentalCard({
 
                 </div>
 
-                <div className="flex gap-3">
-
+                <div className="flex flex-wrap gap-3">
                     <Button
                         variant="outline"
                         className="flex-1"
@@ -103,6 +103,25 @@ export default function RentalCard({
                         <PayButton rentalRequestId={rental.id} />
                     )}
 
+                    {(rental.status === "ACTIVE" ||
+                        rental.status === "COMPLETED") &&
+                        !rental.hasReviewed && (
+                            <LeaveReviewDialog
+                                propertyId={property.id}
+                            />
+                        )}
+
+                    {(rental.status === "ACTIVE" ||
+                        rental.status === "COMPLETED") &&
+                        rental.hasReviewed && (
+                            <Button
+                                variant="outline"
+                                disabled
+                                className="flex-1"
+                            >
+                                Review Submitted
+                            </Button>
+                        )}
                 </div>
 
             </CardContent>

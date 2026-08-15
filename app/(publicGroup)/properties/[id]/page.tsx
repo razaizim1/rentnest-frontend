@@ -8,6 +8,7 @@ import {
     MapPin,
     Maximize,
 } from "lucide-react";
+import { notFound } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,293 +23,303 @@ import { getProperty } from "../../_actions/getProperty";
 import { ParamsWithId } from "@/lib/types";
 import { getMe } from "@/service/getMe";
 import { checkRentalStatus } from "@/app/(dashboardGroup)/dashboard/_actions/checkRentalStatus";
-
-
+import { ReviewSection } from "../../_components/property/ReviewSection";
 
 export default async function PropertyDetailsPage({
     params,
 }: ParamsWithId) {
-
     const { id } = await params;
+
+    // Property
     const result = await getProperty(id);
-    const property = result?.data;
+
+    if (!result?.data) {
+        notFound();
+    }
+
+    const property = result.data;
+
+    // Current user
     const userResult = await getMe();
     const user = userResult?.data;
-    const rentalStatus = await checkRentalStatus(id);
+
+    // Rental status only for logged-in user
     let hasRequested = false;
-    let status = null;
+    let status: string | null = null;
 
     if (user) {
         const rentalStatus = await checkRentalStatus(id);
 
-        hasRequested = rentalStatus?.data?.hasRequested ?? false;
-        status = rentalStatus?.data?.status ?? null;
+        hasRequested =
+            rentalStatus?.data?.hasRequested ?? false;
+
+        status =
+            rentalStatus?.data?.status ?? null;
     }
 
     return (
-        <div className="container mx-auto py-10">
+        <main className="min-h-screen bg-muted/20">
+            <div className="container mx-auto px-4 py-8 sm:py-10">
 
-            <Button
-                variant="ghost"
-                asChild
-                className="mb-8"
-            >
-                <Link href="/properties">
-                    ← Back to Properties
-                </Link>
-            </Button>
-
-            <div className="grid gap-10 lg:grid-cols-2">
-
-                {/* Image */}
-
-                <div>
-
-                    <Image
-                        src={property.image}
-                        alt={property.title}
-                        width={900}
-                        height={700}
-                        className="h-[500px] w-full rounded-2xl object-cover"
-                    />
-
+                {/* Back */}
+                <div className="mb-6">
+                    <Button
+                        variant="ghost"
+                        asChild
+                        className="-ml-2"
+                    >
+                        <Link href="/dashboard">
+                            ← Back to Dashboard
+                        </Link>
+                    </Button>
                 </div>
 
-                {/* Details */}
+                {/* Main Property Section */}
+                <section className="overflow-hidden rounded-3xl border bg-background shadow-sm">
+                    <div className="grid lg:grid-cols-2">
 
-                <div className="space-y-6">
+                        {/* Image */}
+                        <div className="relative min-h-[320px] lg:min-h-[680px]">
+                            <Image
+                                src={property.image}
+                                alt={property.title}
+                                fill
+                                priority
+                                sizes="(max-width: 1024px) 100vw, 50vw"
+                                className="object-cover"
+                            />
 
-                    <div>
-
-                        <Badge>
-                            {property.category.name}
-                        </Badge>
-
-                        <h1 className="mt-4 text-4xl font-bold">
-                            {property.title}
-                        </h1>
-
-                        <div className="mt-3 flex items-center gap-2 text-muted-foreground">
-                            <MapPin size={18} />
-                            {property.location}
+                            {/* Overlay */}
+                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent p-6 lg:p-8">
+                                <Badge className="border-0 bg-white/95 text-foreground hover:bg-white/95">
+                                    {property.category.name}
+                                </Badge>
+                            </div>
                         </div>
 
-                    </div>
+                        {/* Details */}
+                        <div className="flex flex-col p-6 sm:p-8 lg:p-10">
 
-                    <div>
+                            {/* Header */}
+                            <div>
+                                <Badge variant="secondary">
+                                    {property.category.name}
+                                </Badge>
 
-                        <h2 className="text-3xl font-bold text-primary">
-                            ৳ {property.rentAmount.toLocaleString()}
+                                <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+                                    {property.title}
+                                </h1>
 
-                            <span className="text-lg font-normal text-muted-foreground">
-                                {" "}
-                                / month
-                            </span>
-
-                        </h2>
-
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-
-                        <Card>
-
-                            <CardContent className="flex items-center gap-3 p-5">
-
-                                <BedDouble />
-
-                                <div>
-
-                                    <p className="text-sm text-muted-foreground">
-                                        Bedrooms
-                                    </p>
-
-                                    <h4 className="font-semibold">
-                                        {property.bedrooms}
-                                    </h4>
-
+                                <div className="mt-3 flex items-center gap-2 text-muted-foreground">
+                                    <MapPin
+                                        size={18}
+                                        className="shrink-0"
+                                    />
+                                    <span>
+                                        {property.location}
+                                    </span>
                                 </div>
 
-                            </CardContent>
-
-                        </Card>
-
-                        <Card>
-
-                            <CardContent className="flex items-center gap-3 p-5">
-
-                                <Bath />
-
-                                <div>
-
+                                <div className="mt-6">
                                     <p className="text-sm text-muted-foreground">
-                                        Bathrooms
+                                        Monthly Rent
                                     </p>
 
-                                    <h4 className="font-semibold">
-                                        {property.bathrooms}
-                                    </h4>
+                                    <h2 className="mt-1 text-3xl font-bold text-primary sm:text-4xl">
+                                        ৳{" "}
+                                        {property.rentAmount.toLocaleString()}
 
+                                        <span className="ml-1 text-base font-normal text-muted-foreground">
+                                            / month
+                                        </span>
+                                    </h2>
                                 </div>
-
-                            </CardContent>
-
-                        </Card>
-
-                        <Card>
-
-                            <CardContent className="flex items-center gap-3 p-5">
-
-                                <Maximize />
-
-                                <div>
-
-                                    <p className="text-sm text-muted-foreground">
-                                        Area
-                                    </p>
-
-                                    <h4 className="font-semibold">
-                                        {property.area} sqft
-                                    </h4>
-
-                                </div>
-
-                            </CardContent>
-
-                        </Card>
-
-                        <Card>
-
-                            <CardContent className="flex items-center gap-3 p-5">
-
-                                <Building2 />
-
-                                <div>
-
-                                    <p className="text-sm text-muted-foreground">
-                                        Type
-                                    </p>
-
-                                    <h4 className="font-semibold">
-                                        {property.category.name}
-                                    </h4>
-
-                                </div>
-
-                            </CardContent>
-
-                        </Card>
-
-                    </div>
-
-                    <Card>
-
-                        <CardHeader>
-
-                            <CardTitle>
-                                Description
-                            </CardTitle>
-
-                        </CardHeader>
-
-                        <CardContent>
-
-                            <p className="leading-7 text-muted-foreground">
-                                {property.description}
-                            </p>
-
-                        </CardContent>
-
-                    </Card>
-
-                    <Card>
-
-                        <CardHeader>
-
-                            <CardTitle>
-                                Amenities
-                            </CardTitle>
-
-                        </CardHeader>
-
-                        <CardContent>
-
-                            <div className="grid grid-cols-2 gap-3">
-
-                                {property.amenities.map(
-                                    (item: string) => (
-                                        <div
-                                            key={item}
-                                            className="flex items-center gap-2"
-                                        >
-                                            <Check
-                                                size={18}
-                                                className="text-green-600"
-                                            />
-
-                                            {item}
-
-                                        </div>
-                                    )
-                                )}
-
                             </div>
 
-                        </CardContent>
+                            {/* Features */}
+                            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
+                                <FeatureCard
+                                    icon={<BedDouble />}
+                                    label="Bedrooms"
+                                    value={property.bedrooms}
+                                />
 
-                    </Card>
+                                <FeatureCard
+                                    icon={<Bath />}
+                                    label="Bathrooms"
+                                    value={property.bathrooms}
+                                />
 
-                    {/* User not logged in */}
-                    {!user && (
-                        <Button asChild className="w-full">
-                            <Link href="/login">
-                                Login to Request
-                            </Link>
-                        </Button>
-                    )}
+                                <FeatureCard
+                                    icon={<Maximize />}
+                                    label="Area"
+                                    value={`${property.area} sqft`}
+                                />
 
-                    {/* Tenant can request */}
-                    {user?.role === "TENANT" && !hasRequested && (
-                        <Button asChild className="w-full">
-                            <Link href={`/properties/${id}/rent`}>
-                                Request Rental
-                            </Link>
-                        </Button>
-                    )}
+                                <FeatureCard
+                                    icon={<Building2 />}
+                                    label="Type"
+                                    value={property.category.name}
+                                />
+                            </div>
 
-                    {/* Request Pending */}
-                    {user?.role === "TENANT" &&
-                        hasRequested &&
-                        status === "PENDING" && (
-                            <Button disabled className="w-full">
-                                Request Sent
-                            </Button>
-                        )}
+                            {/* Description */}
+                            <div className="mt-8">
+                                <h3 className="text-lg font-semibold">
+                                    About this property
+                                </h3>
 
-                    {/* Approved */}
-                    {user?.role === "TENANT" &&
-                        hasRequested &&
-                        status === "APPROVED" && (
-                            <Button disabled className="w-full">
-                                Rental Approved
-                            </Button>
-                        )}
+                                <p className="mt-3 leading-7 text-muted-foreground">
+                                    {property.description}
+                                </p>
+                            </div>
 
-                    {/* Rejected */}
-                    {user?.role === "TENANT" &&
-                        hasRequested &&
-                        status === "REJECTED" && (
-                            <Button asChild className="w-full">
-                                <Link href={`/properties/${id}/rent`}>
-                                    Request Again
-                                </Link>
-                            </Button>
-                        )}
+                            {/* Amenities */}
+                            <div className="mt-8">
+                                <h3 className="text-lg font-semibold">
+                                    Amenities
+                                </h3>
 
+                                {property.amenities?.length > 0 ? (
+                                    <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                                        {property.amenities.map(
+                                            (item: string) => (
+                                                <div
+                                                    key={item}
+                                                    className="flex items-center gap-2 text-sm text-muted-foreground"
+                                                >
+                                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
+                                                        <Check size={15} />
+                                                    </span>
+
+                                                    <span>{item}</span>
+                                                </div>
+                                            )
+                                        )}
+                                    </div>
+                                ) : (
+                                    <p className="mt-3 text-sm text-muted-foreground">
+                                        No amenities listed.
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Rental Action */}
+                            <div className="mt-auto pt-8">
+
+                                {/* Logged out */}
+                                {!user && (
+                                    <Button
+                                        asChild
+                                        className="h-12 w-full rounded-xl text-base"
+                                    >
+                                        <Link href="/login">
+                                            Login to Request
+                                        </Link>
+                                    </Button>
+                                )}
+
+                                {/* Tenant can request */}
+                                {user?.role === "TENANT" &&
+                                    !hasRequested && (
+                                        <Button
+                                            asChild
+                                            className="h-12 w-full rounded-xl text-base"
+                                        >
+                                            <Link
+                                                href={`/properties/${id}/rent`}
+                                            >
+                                                Request Rental
+                                            </Link>
+                                        </Button>
+                                    )}
+
+                                {/* Pending */}
+                                {user?.role === "TENANT" &&
+                                    hasRequested &&
+                                    status === "PENDING" && (
+                                        <Button
+                                            disabled
+                                            className="h-12 w-full rounded-xl"
+                                        >
+                                            Request Sent
+                                        </Button>
+                                    )}
+
+                                {/* Approved */}
+                                {user?.role === "TENANT" &&
+                                    hasRequested &&
+                                    status === "APPROVED" && (
+                                        <Button
+                                            disabled
+                                            className="h-12 w-full rounded-xl"
+                                        >
+                                            Rental Approved
+                                        </Button>
+                                    )}
+
+                                {/* Rejected */}
+                                {user?.role === "TENANT" &&
+                                    hasRequested &&
+                                    status === "REJECTED" && (
+                                        <Button
+                                            asChild
+                                            className="h-12 w-full rounded-xl text-base"
+                                        >
+                                            <Link
+                                                href={`/properties/${id}/rent`}
+                                            >
+                                                Request Again
+                                            </Link>
+                                        </Button>
+                                    )}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Reviews - FULL WIDTH */}
+                <section className="mt-10 rounded-3xl border bg-background p-6 shadow-sm sm:p-8">
+                    <ReviewSection
+                        propertyId={id}
+                        currentUser={user}
+                        hasRequested={hasRequested}
+                        rentalStatus={status}
+                    />
+                </section>
+            </div>
+        </main>
+    );
+}
+
+type FeatureCardProps = {
+    icon: React.ReactNode;
+    label: string;
+    value: string | number;
+};
+
+function FeatureCard({
+    icon,
+    label,
+    value,
+}: FeatureCardProps) {
+    return (
+        <Card className="rounded-2xl shadow-none">
+            <CardContent className="flex items-center gap-3 p-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    {icon}
                 </div>
 
-            </div>
+                <div className="min-w-0">
+                    <p className="text-xs text-muted-foreground">
+                        {label}
+                    </p>
 
-        </div>
+                    <p className="mt-1 truncate font-semibold">
+                        {value}
+                    </p>
+                </div>
+            </CardContent>
+        </Card>
     );
 }
