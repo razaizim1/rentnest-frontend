@@ -21,6 +21,10 @@ export default async function PropertiesPage({
         limit: params.limit || "6",
     });
 
+    if (!result.success) {
+        throw new Error(result.message);
+    }
+
     const properties = result?.data?.data ?? [];
     const meta = result?.data?.meta;
     const total = Number(meta?.total || 0);

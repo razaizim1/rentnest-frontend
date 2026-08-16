@@ -12,6 +12,14 @@ export interface IProperty {
     amenities: string[];
     available: boolean;
 
+    landlord: {
+        id: string;
+        name: string;
+        email: string;
+    };
+
+
+
     category: {
         id: string;
         name: string;
@@ -19,6 +27,7 @@ export interface IProperty {
 
     _count: {
         reviews: number;
+        rentalRequests: number;
     };
 }
 
@@ -83,6 +92,7 @@ export type LandlordStatsProps = {
 
 export type IRentalRequest = {
     id: string;
+
     status:
     | "PENDING"
     | "APPROVED"
@@ -105,6 +115,12 @@ export type IRentalRequest = {
         location: string;
         rentAmount: number;
         image: string;
+
+        landlord: {
+            id: string;
+            name: string;
+            email: string;
+        };
     };
 };
 
@@ -126,3 +142,35 @@ export interface IReview {
         avatar?: string | null;
     };
 }
+
+export type GetAdminUsersParams = {
+    page?: string;
+    limit?: string;
+    search?: string;
+};
+
+export type GetAdminPropertiesParams = {
+    page?: string;
+    limit?: string;
+    location?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    categoryId?: string;
+};
+
+export interface IAdminProperty extends IProperty {
+    landlord: {
+        id: string;
+        name: string;
+        email: string;
+    };
+
+    _count: {
+        reviews: number;
+        rentalRequests: number;
+    };
+}
+
+export type AdminPropertyTableProps = {
+    properties: IAdminProperty[];
+};

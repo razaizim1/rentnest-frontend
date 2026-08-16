@@ -5,24 +5,88 @@ import { cookies } from "next/headers";
 export type RentalState = {
     success: boolean;
     message: string;
+    statusCode?: number;
 };
 
+export const createRental = async (
+    _prevState: RentalState,
+    formData: FormData
+): Promise<RentalState> => {
+    try {
+        const cookieStore = await cookies();
 
-export const createRental = async (prevState: RentalState, formData: FormData): Promise<RentalState> => {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("accessToken");
-    const payload = Object.fromEntries(formData.entries());
+        const accessToken =
+            cookieStore.get("accessToken")?.value;
 
-    const res = await fetch(`${process.env.BACKEND_API_URL}/api/rentals`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token?.value || "" || ""}`,
-        },
-        body: JSON.stringify(payload),
-    })
+        if (!accessToken) {
+            return {
+                success: false,
+                statusCode: 401,
+                message: "Please login to submit a rental request.",
+            };
+        }
 
-    const result = await res.json();
+        const payload = {
+            propertyId: formData.get("propertyId"),
+            moveInDate: formData.get("moveInDate"),
+            message: formData.get("message"),
+        };
 
-    return result;
-}
+        if (!payload.propertyId) {
+            return {
+                success: false,
+                statusCode: 400,
+                message: "Property information is missing.",
+            };
+        }
+
+        if (!payload.moveInDate) {
+            return {
+                success: false,
+                statusCode: 400,
+                message: "Please select a move-in date.",
+            };
+        }
+
+        const res = await fetch(
+            `${process.env.BACKEND_API_URL}/api/rentals`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify(payload),
+            }
+        );
+
+        const result = await res.json();
+
+        if (!res.ok || !result.success) {
+            return {
+                success: false,
+                statusCode: res.status,
+                message:
+                    result.message ||
+                    "Failed to submit rental request.",
+            };
+        }
+
+        return {
+            success: true,
+            statusCode: result.statusCode,
+            message:
+                result.message ||
+                "Rental request submitted successfully.",
+        };
+    } catch (error) {
+        console.error("Create rental error:", error);
+
+        return {
+            success: false,
+            statusCode: 500,
+            message:
+                "Unable to submit your rental request right now. Please try again.",
+        };
+    }
+};
