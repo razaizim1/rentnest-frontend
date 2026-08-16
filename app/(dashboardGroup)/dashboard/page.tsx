@@ -7,6 +7,9 @@ export default async function DashboardPage() {
 
     const result = await getMyRentals();
 
+    if (!result.success) {
+        throw new Error(result.message);
+    }
     const rentals = result.data ?? [];
 
     return (
