@@ -5,6 +5,10 @@ import { AdminRentalTable } from "../_components/AdminRentalTable";
 export default async function AdminRentalsPage() {
     const result = await getAdminRentals();
 
+    if (!result.success) {
+        throw new Error(result.message);
+    }
+
     const rentals: IRentalRequest[] =
         result?.data ?? [];
 

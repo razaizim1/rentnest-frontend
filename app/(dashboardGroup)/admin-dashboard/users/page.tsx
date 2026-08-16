@@ -20,6 +20,10 @@ export default async function AdminUsersPage({
         limit,
     });
 
+    if (!result.success) {
+        throw new Error(result.message);
+    }
+
     const users = result?.data?.data ?? [];
     const meta = result?.data?.meta;
 

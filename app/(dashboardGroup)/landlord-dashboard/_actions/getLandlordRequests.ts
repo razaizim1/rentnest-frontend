@@ -3,28 +3,65 @@
 import { cookies } from "next/headers";
 
 export const getLandlordRequests = async () => {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
+    try {
+        const cookieStore = await cookies();
 
-    if (!accessToken) {
+        const accessToken =
+            cookieStore.get("accessToken")?.value;
+
+        if (!accessToken) {
+            return {
+                success: false,
+                statusCode: 401,
+                message: "Please login to view rental requests.",
+                data: [],
+            };
+        }
+
+        const res = await fetch(
+            `${process.env.BACKEND_API_URL}/api/landlord/rentals`,
+            {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                cache: "no-store",
+            }
+        );
+
+        const result = await res.json();
+
+        if (!res.ok || !result.success) {
+            return {
+                success: false,
+                statusCode: res.status,
+                message:
+                    result.message ||
+                    "Failed to load rental requests.",
+                data: [],
+            };
+        }
+
+        return {
+            success: true,
+            statusCode: result.statusCode,
+            message:
+                result.message ||
+                "Rental requests loaded successfully.",
+            data: result.data ?? [],
+        };
+    } catch (error) {
+        console.error(
+            "Get landlord requests error:",
+            error
+        );
+
         return {
             success: false,
-            message: "Unauthorized",
+            statusCode: 500,
+            message:
+                "Unable to load rental requests right now. Please try again.",
             data: [],
         };
     }
-
-    const res = await fetch(
-        `${process.env.BACKEND_API_URL}/api/landlord/requests`,
-        {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-            cache: "no-store",
-        }
-    );
-
-    const result = await res.json();
-
-    return result;
 };

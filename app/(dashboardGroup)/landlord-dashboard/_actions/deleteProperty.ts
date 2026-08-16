@@ -1,26 +1,33 @@
 "use server";
 
 import { cookies } from "next/headers";
-
-type DeletePropertyState = {
-    success: boolean;
-    message: string;
-};
+import { revalidatePath } from "next/cache";
 
 export const deleteProperty = async (
     propertyId: string
-): Promise<DeletePropertyState> => {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
-
-    if (!accessToken) {
-        return {
-            success: false,
-            message: "You are not logged in.",
-        };
-    }
-
+) => {
     try {
+        if (!propertyId) {
+            return {
+                success: false,
+                statusCode: 400,
+                message: "Property ID is required.",
+            };
+        }
+
+        const cookieStore = await cookies();
+
+        const accessToken =
+            cookieStore.get("accessToken")?.value;
+
+        if (!accessToken) {
+            return {
+                success: false,
+                statusCode: 401,
+                message: "Please login as a landlord.",
+            };
+        }
+
         const res = await fetch(
             `${process.env.BACKEND_API_URL}/api/landlord/properties/${propertyId}`,
             {
@@ -36,21 +43,32 @@ export const deleteProperty = async (
         if (!res.ok || !result.success) {
             return {
                 success: false,
+                statusCode: res.status,
                 message:
-                    result.message || "Failed to delete property.",
+                    result.message ||
+                    "Failed to delete property.",
             };
         }
 
+        revalidatePath("/landlord-dashboard");
+        revalidatePath("/landlord-dashboard/properties");
+        revalidatePath("/properties");
+
         return {
             success: true,
+            statusCode: result.statusCode,
             message:
-                result.message || "Property deleted successfully.",
+                result.message ||
+                "Property deleted successfully.",
         };
-    } catch {
+    } catch (error) {
+        console.error("Delete property error:", error);
+
         return {
             success: false,
+            statusCode: 500,
             message:
-                "Something went wrong while deleting the property.",
+                "Unable to delete property right now. Please try again.",
         };
     }
 };

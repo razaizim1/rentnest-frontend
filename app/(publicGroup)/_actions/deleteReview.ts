@@ -7,18 +7,36 @@ export const deleteReview = async (
     reviewId: string,
     propertyId: string
 ) => {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
-
-    if (!accessToken) {
-        return {
-            success: false,
-            statusCode: 401,
-            message: "Please login to delete your review.",
-        };
-    }
-
     try {
+        if (!reviewId) {
+            return {
+                success: false,
+                statusCode: 400,
+                message: "Review ID is required.",
+            };
+        }
+
+        if (!propertyId) {
+            return {
+                success: false,
+                statusCode: 400,
+                message: "Property ID is required.",
+            };
+        }
+
+        const cookieStore = await cookies();
+
+        const accessToken =
+            cookieStore.get("accessToken")?.value;
+
+        if (!accessToken) {
+            return {
+                success: false,
+                statusCode: 401,
+                message: "Please login to delete your review.",
+            };
+        }
+
         const res = await fetch(
             `${process.env.BACKEND_API_URL}/api/reviews/${reviewId}`,
             {
@@ -36,7 +54,8 @@ export const deleteReview = async (
                 success: false,
                 statusCode: res.status,
                 message:
-                    result.message || "Failed to delete review.",
+                    result.message ||
+                    "Failed to delete review.",
             };
         }
 
@@ -46,7 +65,8 @@ export const deleteReview = async (
             success: true,
             statusCode: result.statusCode,
             message:
-                result.message || "Review deleted successfully.",
+                result.message ||
+                "Review deleted successfully.",
         };
     } catch (error) {
         console.error("Delete review error:", error);
@@ -55,7 +75,7 @@ export const deleteReview = async (
             success: false,
             statusCode: 500,
             message:
-                "Something went wrong while deleting your review.",
+                "Unable to delete your review right now. Please try again.",
         };
     }
 };

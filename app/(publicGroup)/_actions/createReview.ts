@@ -15,46 +15,57 @@ export const createReview = async (
     _prevState: CreateReviewState,
     formData: FormData
 ): Promise<CreateReviewState> => {
-    const cookieStore = await cookies();
-    const accessToken = cookieStore.get("accessToken")?.value;
-
-    if (!accessToken) {
-        return {
-            success: false,
-            statusCode: 401,
-            message: "Please login to submit a review.",
-        };
-    }
-
-    const rating = Number(formData.get("rating"));
-    const comment = formData.get("comment")?.toString().trim();
-
-    // Client-side + server action validation
-    if (!rating || rating < 1 || rating > 5) {
-        return {
-            success: false,
-            statusCode: 400,
-            message: "Please select a rating between 1 and 5.",
-        };
-    }
-
-    if (!comment) {
-        return {
-            success: false,
-            statusCode: 400,
-            message: "Review comment is required.",
-        };
-    }
-
-    if (comment.length < 5) {
-        return {
-            success: false,
-            statusCode: 400,
-            message: "Review must contain at least 5 characters.",
-        };
-    }
-
     try {
+        if (!propertyId) {
+            return {
+                success: false,
+                statusCode: 400,
+                message: "Property ID is required.",
+            };
+        }
+
+        const cookieStore = await cookies();
+
+        const accessToken =
+            cookieStore.get("accessToken")?.value;
+
+        if (!accessToken) {
+            return {
+                success: false,
+                statusCode: 401,
+                message: "Please login to submit a review.",
+            };
+        }
+
+        const rating = Number(formData.get("rating"));
+        const comment =
+            formData.get("comment")?.toString().trim();
+
+        if (!rating || rating < 1 || rating > 5) {
+            return {
+                success: false,
+                statusCode: 400,
+                message: "Please select a rating between 1 and 5.",
+            };
+        }
+
+        if (!comment) {
+            return {
+                success: false,
+                statusCode: 400,
+                message: "Review comment is required.",
+            };
+        }
+
+        if (comment.length < 5) {
+            return {
+                success: false,
+                statusCode: 400,
+                message:
+                    "Review must contain at least 5 characters.",
+            };
+        }
+
         const res = await fetch(
             `${process.env.BACKEND_API_URL}/api/reviews`,
             {
@@ -78,7 +89,8 @@ export const createReview = async (
                 success: false,
                 statusCode: res.status,
                 message:
-                    result.message || "Failed to submit review.",
+                    result.message ||
+                    "Failed to submit review.",
             };
         }
 
@@ -88,7 +100,8 @@ export const createReview = async (
             success: true,
             statusCode: result.statusCode,
             message:
-                result.message || "Review submitted successfully.",
+                result.message ||
+                "Review submitted successfully.",
             data: result.data,
         };
     } catch (error) {
@@ -98,7 +111,7 @@ export const createReview = async (
             success: false,
             statusCode: 500,
             message:
-                "Something went wrong while submitting your review.",
+                "Unable to submit your review right now. Please try again.",
         };
     }
 };

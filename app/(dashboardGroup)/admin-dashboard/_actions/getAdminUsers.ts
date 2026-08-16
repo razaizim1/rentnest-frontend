@@ -1,29 +1,19 @@
 "use server";
 
-import { GetAdminUsersParams } from "@/lib/types";
 import { cookies } from "next/headers";
+
+type GetAdminUsersParams = {
+    page?: string;
+    limit?: string;
+    search?: string;
+};
 
 export const getAdminUsers = async (
     params: GetAdminUsersParams = {}
 ) => {
     try {
-        const searchParams = new URLSearchParams();
-
-        if (params.page) {
-            searchParams.set("page", params.page);
-        }
-
-        if (params.search) {
-            searchParams.set("search", params.search);
-        }
-
-        if (params.limit) {
-            searchParams.set("limit", params.limit);
-        }
-
-        const query = searchParams.toString();
-
         const cookieStore = await cookies();
+
         const accessToken =
             cookieStore.get("accessToken")?.value;
 
@@ -31,22 +21,37 @@ export const getAdminUsers = async (
             return {
                 success: false,
                 statusCode: 401,
-                message: "Unauthorized",
-                data: {
-                    meta: {
-                        page: 1,
-                        limit: 10,
-                        total: 0,
-                    },
-                    data: [],
+                message: "Please login as an administrator.",
+                data: [],
+                meta: {
+                    page: 1,
+                    limit: 10,
+                    total: 0,
                 },
             };
         }
+
+        const searchParams = new URLSearchParams();
+
+        if (params.page) {
+            searchParams.set("page", params.page);
+        }
+
+        if (params.limit) {
+            searchParams.set("limit", params.limit);
+        }
+
+        if (params.search) {
+            searchParams.set("search", params.search);
+        }
+
+        const query = searchParams.toString();
 
         const res = await fetch(
             `${process.env.BACKEND_API_URL}/api/admin/users${query ? `?${query}` : ""
             }`,
             {
+                method: "GET",
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                 },
@@ -63,32 +68,41 @@ export const getAdminUsers = async (
                 message:
                     result.message ||
                     "Failed to load users.",
-                data: {
-                    meta: {
-                        page: 1,
-                        limit: 10,
-                        total: 0,
-                    },
-                    data: [],
+                data: [],
+                meta: {
+                    page: 1,
+                    limit: 10,
+                    total: 0,
                 },
             };
         }
 
-        return result;
+        return {
+            success: true,
+            statusCode: result.statusCode,
+            message:
+                result.message ||
+                "Users loaded successfully.",
+            data: result.data ?? [],
+            meta: result.meta ?? {
+                page: 1,
+                limit: 10,
+                total: 0,
+            },
+        };
     } catch (error) {
         console.error("Get admin users error:", error);
 
         return {
             success: false,
             statusCode: 500,
-            message: "Failed to load users.",
-            data: {
-                meta: {
-                    page: 1,
-                    limit: 10,
-                    total: 0,
-                },
-                data: [],
+            message:
+                "Unable to load users right now. Please try again.",
+            data: [],
+            meta: {
+                page: 1,
+                limit: 10,
+                total: 0,
             },
         };
     }

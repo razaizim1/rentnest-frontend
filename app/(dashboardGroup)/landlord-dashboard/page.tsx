@@ -15,6 +15,18 @@ export default async function LandlordDashboardPage() {
         getCategories(),
     ]);
 
+    if (!propertyResult.success) {
+        throw new Error(propertyResult.message);
+    }
+
+    if (!requestResult.success) {
+        throw new Error(requestResult.message);
+    }
+
+    if (!categoryResult.success) {
+        throw new Error(categoryResult.message);
+    }
+
     const properties = propertyResult?.data ?? [];
     const requests = requestResult?.data ?? [];
     const categories = categoryResult?.data ?? [];

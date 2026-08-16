@@ -3,22 +3,42 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
+type UserStatus = "ACTIVE" | "BANNED";
+
 export const updateUserStatus = async (
     userId: string,
-    status: "ACTIVE" | "BANNED"
+    status: UserStatus
 ) => {
-    const cookieStore = await cookies();
-    const accessToken =
-        cookieStore.get("accessToken")?.value;
-
-    if (!accessToken) {
-        return {
-            success: false,
-            message: "Unauthorized",
-        };
-    }
-
     try {
+        if (!userId) {
+            return {
+                success: false,
+                statusCode: 400,
+                message: "User ID is required.",
+            };
+        }
+
+        if (!["ACTIVE", "BANNED"].includes(status)) {
+            return {
+                success: false,
+                statusCode: 400,
+                message: "Invalid user status.",
+            };
+        }
+
+        const cookieStore = await cookies();
+
+        const accessToken =
+            cookieStore.get("accessToken")?.value;
+
+        if (!accessToken) {
+            return {
+                success: false,
+                statusCode: 401,
+                message: "Please login as an administrator.",
+            };
+        }
+
         const res = await fetch(
             `${process.env.BACKEND_API_URL}/api/admin/users/${userId}`,
             {
@@ -38,9 +58,14 @@ export const updateUserStatus = async (
         if (!res.ok || !result.success) {
             return {
                 success: false,
+                statusCode: res.status,
                 message:
                     result.message ||
-                    "Failed to update user status.",
+                    `Failed to ${
+                        status === "BANNED"
+                            ? "ban"
+                            : "unban"
+                    } user.`,
             };
         }
 
@@ -48,18 +73,27 @@ export const updateUserStatus = async (
 
         return {
             success: true,
+            statusCode: result.statusCode,
             message:
                 result.message ||
-                "User status updated successfully.",
+                `User ${
+                    status === "BANNED"
+                        ? "banned"
+                        : "unbanned"
+                } successfully.`,
             data: result.data,
         };
     } catch (error) {
-        console.error("Update user status error:", error);
+        console.error(
+            "Update user status error:",
+            error
+        );
 
         return {
             success: false,
+            statusCode: 500,
             message:
-                "Something went wrong while updating user status.",
+                "Unable to update user status right now. Please try again.",
         };
     }
 };

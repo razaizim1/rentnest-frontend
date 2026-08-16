@@ -17,13 +17,15 @@ export default async function AdminPropertiesPage({
         page: params.page || "1",
         limit: "10",
     });
-console.log("ADMIN PROPERTY RESULT:", result);
+
+    if (!result.success) {
+        throw new Error(result.message);
+    }
+
     const properties: IAdminProperty[] =
         result?.data ?? [];
 
     const meta = result?.meta;
-console.log("PROPERTIES:", properties);
-console.log("META:", meta);
     return (
         <div className="space-y-8">
             <div>
