@@ -17,6 +17,14 @@ export default async function MyPropertiesPage() {
         getCategories(),
     ]);
 
+    if (!propertyResult.success) {
+        throw new Error(propertyResult.message);
+    }
+
+    if (!categoryResult.success) {
+        throw new Error(categoryResult.message);
+    }
+
     const properties = propertyResult?.data ?? [];
     const categories = categoryResult?.data ?? [];
 
