@@ -4,12 +4,14 @@ type PropertyGalleryProps = {
     image: string;
     title: string;
     category?: string;
+    available?: boolean;
 };
 
 export function PropertyGallery({
     image,
     title,
     category,
+    available,
 }: PropertyGalleryProps) {
     return (
         <div className="grid gap-3 lg:grid-cols-[1.6fr_1fr]">
@@ -22,13 +24,20 @@ export function PropertyGallery({
                     sizes="(max-width: 1024px) 100vw, 60vw"
                     className="object-cover"
                 />
-                {category && (
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent p-6">
-                        <span className="rounded-full bg-white/95 px-3 py-1 text-sm font-medium text-foreground">
-                            {category}
-                        </span>
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent p-6">
+                    <div className="flex flex-wrap gap-2">
+                        {category && (
+                            <span className="rounded-full bg-white/95 px-3 py-1 text-sm font-medium text-foreground">
+                                {category}
+                            </span>
+                        )}
+                        {available === false && (
+                            <span className="rounded-full bg-red-600 px-3 py-1 text-sm font-medium text-white">
+                                Rented
+                            </span>
+                        )}
                     </div>
-                )}
+                </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">

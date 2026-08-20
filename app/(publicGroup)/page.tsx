@@ -449,7 +449,7 @@ export default async function HomePage() {
                                 asChild
                                 size="lg"
                                 variant="outline"
-                                className="border-white/30 text-primary-foreground hover:bg-white/10 hover:text-primary-foreground"
+                                className="border-white/30 text-primary hover:bg-white/10 hover:text-primary-foreground"
                             >
                                 <Link href="/register">Create account</Link>
                             </Button>

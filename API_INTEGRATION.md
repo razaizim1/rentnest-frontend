@@ -26,7 +26,7 @@ BACKEND_API_URL=https://your-backend-url.com
 |---|---|---:|---|---|
 | Property Listing | `getProperties`, `PropertyGrid` | GET | `/api/properties` | Public |
 | Property Search | `PropertySearch` + `getProperties` | GET | `/api/properties?search=...` | Public |
-| Property Filter | `PropertyFilter` + `getProperties` | GET | `/api/properties?location=&minPrice=&price=&type=&amenities=` | Public |
+| Property Filter | `PropertyFilter` + `getProperties` | GET | `/api/properties?location=&minPrice=&price=&type=&amenities=&availability=` | Public |
 | Property Pagination | `PropertyPagination` + `getProperties` | GET | `/api/properties?page=&limit=` | Public |
 | Property Details | `getProperty` | GET | `/api/properties/:id` | Public |
 | Property Reviews | `getPropertyReviews` / `ReviewSection` | GET | `/api/properties/:id/reviews` | Public |

@@ -32,6 +32,10 @@ export const getProperties = async (
             searchParams.set("amenities", params.amenities);
         }
 
+        if (params.availability) {
+            searchParams.set("availability", params.availability);
+        }
+
         if (params.page) {
             searchParams.set("page", params.page);
         }

@@ -83,6 +83,7 @@ export type GetPropertiesParams = {
     minPrice?: string;
     amenities?: string;
     type?: string;
+    availability?: string;
     page?: string;
     limit?: string;
 };
@@ -95,6 +96,7 @@ export type PropertiesPageProps = {
         minPrice?: string;
         amenities?: string;
         type?: string;
+        availability?: string;
         page?: string;
         limit?: string;
     }>;

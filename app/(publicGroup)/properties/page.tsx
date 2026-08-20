@@ -19,6 +19,7 @@ export default async function PropertiesPage({
         minPrice: params.minPrice,
         amenities: params.amenities,
         type: params.type,
+        availability: params.availability,
         page: params.page || "1",
         limit: params.limit || "6",
     });
@@ -40,7 +41,8 @@ export default async function PropertiesPage({
         Boolean(params.price) ||
         Boolean(params.minPrice) ||
         Boolean(params.amenities) ||
-        Boolean(params.type);
+        Boolean(params.type) ||
+        Boolean(params.availability);
 
     return (
         <main className="min-h-screen bg-muted/20">
@@ -64,12 +66,12 @@ export default async function PropertiesPage({
                         </p>
                     </div>
 
-                    <div className="mx-auto mt-8 max-w-3xl">
+                    <div className="mx-auto mt-8 max-w-7xl">
                         <div className="rounded-2xl border bg-background p-2 shadow-lg">
                             <PropertySearch />
                         </div>
 
-                        <div className="mx-auto mt-4 max-w-5xl">
+                        <div className="mx-auto mt-4 max-w-7xl">
                             <PropertyFilter />
                         </div>
                     </div>

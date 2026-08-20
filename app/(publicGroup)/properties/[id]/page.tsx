@@ -70,14 +70,26 @@ export default async function PropertyDetailsPage({
                     image={property.image}
                     title={property.title}
                     category={property.category?.name}
+                    available={property.available}
                 />
 
                 <section className="mt-8 overflow-hidden rounded-3xl border bg-background shadow-sm">
                     <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1.4fr_0.8fr] lg:p-10">
                         <div>
-                            <Badge variant="secondary">
-                                {property.category.name}
-                            </Badge>
+                            <div className="flex flex-wrap items-center gap-2">
+                                <Badge variant="secondary">
+                                    {property.category.name}
+                                </Badge>
+                                <Badge
+                                    className={
+                                        property.available
+                                            ? "bg-green-600 text-white hover:bg-green-600"
+                                            : "bg-red-600 text-white hover:bg-red-600"
+                                    }
+                                >
+                                    {property.available ? "Available" : "Rented"}
+                                </Badge>
+                            </div>
 
                             <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
                                 {property.title}
@@ -208,19 +220,31 @@ export default async function PropertyDetailsPage({
                                         Request this rental
                                     </h3>
 
-                                    {!user && (
+                                    {!property.available &&
+                                        status !== "APPROVED" &&
+                                        status !== "ACTIVE" &&
+                                        status !== "COMPLETED" && (
+                                            <p className="rounded-xl border bg-muted/40 p-4 text-sm text-muted-foreground">
+                                                This property is currently rented.
+                                                You can still read reviews below.
+                                            </p>
+                                        )}
+
+                                    {!user && property.available && (
                                         <Button asChild className="h-12 w-full rounded-xl text-base">
                                             <Link href="/login">Login to Request</Link>
                                         </Button>
                                     )}
 
-                                    {user?.role === "TENANT" && !hasRequested && (
-                                        <Button asChild className="h-12 w-full rounded-xl text-base">
-                                            <Link href={`/properties/${id}/rent`}>
-                                                Request to Rent
-                                            </Link>
-                                        </Button>
-                                    )}
+                                    {user?.role === "TENANT" &&
+                                        !hasRequested &&
+                                        property.available && (
+                                            <Button asChild className="h-12 w-full rounded-xl text-base">
+                                                <Link href={`/properties/${id}/rent`}>
+                                                    Request to Rent
+                                                </Link>
+                                            </Button>
+                                        )}
 
                                     {user?.role === "TENANT" &&
                                         hasRequested &&
@@ -244,12 +268,20 @@ export default async function PropertyDetailsPage({
 
                                     {user?.role === "TENANT" &&
                                         hasRequested &&
-                                        status === "REJECTED" && (
+                                        status === "REJECTED" &&
+                                        property.available && (
                                             <Button asChild className="h-12 w-full rounded-xl text-base">
                                                 <Link href={`/properties/${id}/rent`}>
                                                     Request Again
                                                 </Link>
                                             </Button>
+                                        )}
+
+                                    {user?.role === "TENANT" &&
+                                        (status === "ACTIVE" || status === "COMPLETED") && (
+                                            <p className="text-sm text-muted-foreground">
+                                                You already rented this property. Share a review below if you have not already.
+                                            </p>
                                         )}
 
                                     {user && user.role !== "TENANT" && (

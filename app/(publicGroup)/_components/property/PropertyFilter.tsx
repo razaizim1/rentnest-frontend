@@ -43,6 +43,9 @@ export function PropertyFilter() {
     const [amenities, setAmenities] = useState(
         searchParams.get("amenities") || ""
     );
+    const [availability, setAvailability] = useState(
+        searchParams.get("availability") || "all"
+    );
 
     const applyParams = (next: URLSearchParams) => {
         next.delete("page");
@@ -68,6 +71,12 @@ export function PropertyFilter() {
         if (amenities) params.set("amenities", amenities);
         else params.delete("amenities");
 
+        if (availability && availability !== "all") {
+            params.set("availability", availability);
+        } else {
+            params.delete("availability");
+        }
+
         applyParams(params);
     };
 
@@ -77,6 +86,7 @@ export function PropertyFilter() {
         setPrice("");
         setType("");
         setAmenities("");
+        setAvailability("all");
 
         const params = new URLSearchParams(searchParams.toString());
         params.delete("location");
@@ -84,6 +94,7 @@ export function PropertyFilter() {
         params.delete("price");
         params.delete("type");
         params.delete("amenities");
+        params.delete("availability");
         params.delete("page");
 
         applyParams(params);
@@ -91,7 +102,7 @@ export function PropertyFilter() {
 
     return (
         <div className="rounded-2xl border bg-card p-5 shadow-sm">
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-7">
                 <div className="space-y-2">
                     <label className="text-sm font-medium">Location</label>
                     <Input
@@ -157,6 +168,23 @@ export function PropertyFilter() {
                                     {item}
                                 </SelectItem>
                             ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">Status</label>
+                    <Select
+                        value={availability || "all"}
+                        onValueChange={setAvailability}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="All listings" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All listings</SelectItem>
+                            <SelectItem value="available">Available</SelectItem>
+                            <SelectItem value="rented">Rented</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

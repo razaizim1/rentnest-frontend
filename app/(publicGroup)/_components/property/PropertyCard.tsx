@@ -29,6 +29,16 @@ export const PropertyCard = ({
                     {property.category.name}
                 </Badge>
 
+                <Badge
+                    className={`absolute right-4 top-4 ${
+                        property.available
+                            ? "bg-green-600 text-white hover:bg-green-600"
+                            : "bg-red-600 text-white hover:bg-red-600"
+                    }`}
+                >
+                    {property.available ? "Available" : "Rented"}
+                </Badge>
+
             </div>
 
             <CardContent className="space-y-5 p-5">
@@ -90,9 +100,10 @@ export const PropertyCard = ({
                 <Button
                     className="w-full"
                     asChild
+                    variant={property.available ? "default" : "outline"}
                 >
                     <Link href={`/properties/${property.id}`}>
-                        View Details
+                        {property.available ? "View Details" : "View Details & Reviews"}
                     </Link>
                 </Button>
 
