@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { rethrowIfNextInternal } from "@/lib/rethrowIfNextInternal";
 
 export const getAdminRentals = async () => {
     try {
@@ -51,6 +52,8 @@ export const getAdminRentals = async () => {
             data: result.data ?? [],
         };
     } catch (error) {
+        rethrowIfNextInternal(error);
+
         console.error(
             "Get admin rentals error:",
             error

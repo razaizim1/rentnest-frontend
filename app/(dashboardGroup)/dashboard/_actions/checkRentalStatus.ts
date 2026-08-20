@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { rethrowIfNextInternal } from "@/lib/rethrowIfNextInternal";
 
 export const checkRentalStatus = async (
     propertyId: string
@@ -71,6 +72,7 @@ export const checkRentalStatus = async (
             },
         };
     } catch (error) {
+        rethrowIfNextInternal(error);
         console.error(
             "Check rental status error:",
             error

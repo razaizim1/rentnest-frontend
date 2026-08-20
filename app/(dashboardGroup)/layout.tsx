@@ -1,6 +1,8 @@
 import { Navbar } from "@/components/shared/navbar";
 import { getMe } from "@/service/getMe";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({
     children,
 }: {

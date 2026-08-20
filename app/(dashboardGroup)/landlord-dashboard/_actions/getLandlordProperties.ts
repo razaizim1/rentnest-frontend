@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { rethrowIfNextInternal } from "@/lib/rethrowIfNextInternal";
 
 export const getLandlordProperties = async () => {
     try {
@@ -51,6 +52,7 @@ export const getLandlordProperties = async () => {
             data: result.data ?? [],
         };
     } catch (error) {
+        rethrowIfNextInternal(error);
         console.error(
             "Get landlord properties error:",
             error

@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { rethrowIfNextInternal } from "@/lib/rethrowIfNextInternal";
 
 type GetAdminUsersParams = {
     page?: string;
@@ -91,6 +92,7 @@ export const getAdminUsers = async (
             },
         };
     } catch (error) {
+        rethrowIfNextInternal(error);
         console.error("Get admin users error:", error);
 
         return {

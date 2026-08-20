@@ -1,6 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { rethrowIfNextInternal } from "@/lib/rethrowIfNextInternal";
 
 type GetAdminPropertiesParams = {
     page?: string;
@@ -87,6 +88,7 @@ export const getAdminProperties = async (
             },
         };
     } catch (error) {
+        rethrowIfNextInternal(error);
         console.error(
             "Get admin properties error:",
             error
