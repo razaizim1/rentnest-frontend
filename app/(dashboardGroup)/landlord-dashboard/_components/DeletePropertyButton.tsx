@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import {
     AlertDialog,
@@ -27,6 +28,7 @@ export function DeletePropertyButton({
 }: DeletePropertyButtonProps) {
     const [open, setOpen] = useState(false);
     const [pending, startTransition] = useTransition();
+    const router = useRouter();
 
     const handleDelete = () => {
         startTransition(async () => {
@@ -39,8 +41,7 @@ export function DeletePropertyButton({
 
             toast.success(result.message);
             setOpen(false);
-
-            window.location.reload();
+            router.refresh();
         });
     };
 

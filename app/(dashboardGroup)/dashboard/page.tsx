@@ -1,5 +1,6 @@
 import { getMyRentals } from "./_actions/getMyRentals";
 import DashboardStats from "./_components/DashboardStats";
+import { PaymentHistoryTable } from "./_components/PaymentHistoryTable";
 import RentalGrid from "./_components/RentalGrid";
 
 
@@ -29,6 +30,9 @@ export default async function DashboardPage() {
 
             <RentalGrid rentals={rentals} />
 
+            <div className="mt-10">
+                <PaymentHistoryTable rentals={rentals} />
+            </div>
         </div>
     );
 }

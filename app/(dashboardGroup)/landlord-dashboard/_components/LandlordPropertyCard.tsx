@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 import { IProperty } from "@/lib/types";
 import { DeletePropertyButton } from "./DeletePropertyButton";
+import { AvailabilityToggle } from "./AvailabilityToggle";
 
 type LandlordPropertyCardProps = {
     property: IProperty;
@@ -91,7 +92,12 @@ export function LandlordPropertyCard({
                     </span>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2">
+                    <AvailabilityToggle
+                        propertyId={property.id}
+                        available={property.available}
+                    />
+                    <div className="flex gap-2">
                     <EditPropertyDialog
                         property={property}
                         categories={categories}
@@ -100,6 +106,7 @@ export function LandlordPropertyCard({
                     <DeletePropertyButton
                         propertyId={property.id}
                     />
+                    </div>
                 </div>
             </CardContent>
         </Card>

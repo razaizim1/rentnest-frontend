@@ -16,9 +16,9 @@ export interface IProperty {
         id: string;
         name: string;
         email: string;
+        phone?: string;
+        avatar?: string | null;
     };
-
-
 
     category: {
         id: string;
@@ -61,12 +61,27 @@ export interface IRental {
         location: string;
         rentAmount: number;
     };
+
+    payment?: {
+        id: string;
+        rentalRequestId: string;
+        amount: number;
+        transactionId: string;
+        method: string;
+        provider: string;
+        status: string;
+        paidAt: string | null;
+        createdAt: string;
+        updatedAt: string;
+    } | null;
 }
 
 export type GetPropertiesParams = {
     search?: string;
     location?: string;
     price?: string;
+    minPrice?: string;
+    amenities?: string;
     type?: string;
     page?: string;
     limit?: string;
@@ -77,6 +92,8 @@ export type PropertiesPageProps = {
         search?: string;
         location?: string;
         price?: string;
+        minPrice?: string;
+        amenities?: string;
         type?: string;
         page?: string;
         limit?: string;
@@ -88,6 +105,7 @@ export type LandlordStatsProps = {
     pendingRequests: number;
     approvedRequests: number;
     activeRequests: number;
+    earnings: number;
 };
 
 export type IRentalRequest = {
@@ -107,6 +125,7 @@ export type IRentalRequest = {
         id: string;
         name: string;
         email: string;
+        phone?: string;
     };
 
     property: {
@@ -122,6 +141,13 @@ export type IRentalRequest = {
             email: string;
         };
     };
+
+    payment?: {
+        id: string;
+        amount: number;
+        status: string;
+        paidAt?: string | null;
+    } | null;
 };
 
 export type UpdatePropertyState = {
@@ -163,6 +189,8 @@ export interface IAdminProperty extends IProperty {
         id: string;
         name: string;
         email: string;
+        phone?: string;
+        avatar?: string | null;
     };
 
     _count: {

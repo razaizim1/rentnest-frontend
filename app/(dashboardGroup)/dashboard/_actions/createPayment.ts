@@ -13,9 +13,10 @@ export const createPayment = async (
     _prevState: PaymentState | null,
     formData: FormData
 ): Promise<PaymentState> => {
+    let paymentUrl: string | undefined;
+
     try {
-        const rentalRequestId =
-            formData.get("rentalRequestId")?.toString();
+        const rentalRequestId = formData.get("rentalRequestId")?.toString();
 
         if (!rentalRequestId) {
             return {
@@ -26,9 +27,7 @@ export const createPayment = async (
         }
 
         const cookieStore = await cookies();
-
-        const accessToken =
-            cookieStore.get("accessToken")?.value;
+        const accessToken = cookieStore.get("accessToken")?.value;
 
         if (!accessToken) {
             return {
@@ -64,19 +63,15 @@ export const createPayment = async (
             };
         }
 
-        const paymentUrl =
-            result.data?.paymentUrl;
+        paymentUrl = result.data?.paymentUrl;
 
         if (!paymentUrl) {
             return {
                 success: false,
                 statusCode: 500,
-                message:
-                    "Payment checkout URL was not returned.",
+                message: "Payment checkout URL was not returned.",
             };
         }
-
-        redirect(paymentUrl);
     } catch (error) {
         console.error("Create payment error:", error);
 
@@ -87,4 +82,6 @@ export const createPayment = async (
                 "Something went wrong while starting the payment. Please try again.",
         };
     }
+
+    redirect(paymentUrl);
 };

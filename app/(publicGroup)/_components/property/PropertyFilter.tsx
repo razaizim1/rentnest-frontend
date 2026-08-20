@@ -13,6 +13,17 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
+const AMENITIES = [
+    "Parking",
+    "WiFi",
+    "Security",
+    "Balcony",
+    "Garage",
+    "Garden",
+    "Elevator",
+    "Generator",
+];
+
 export function PropertyFilter() {
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -20,165 +31,144 @@ export function PropertyFilter() {
     const [location, setLocation] = useState(
         searchParams.get("location") || ""
     );
-
+    const [minPrice, setMinPrice] = useState(
+        searchParams.get("minPrice") || ""
+    );
     const [price, setPrice] = useState(
         searchParams.get("price") || ""
     );
-
     const [type, setType] = useState(
         searchParams.get("type") || ""
     );
+    const [amenities, setAmenities] = useState(
+        searchParams.get("amenities") || ""
+    );
+
+    const applyParams = (next: URLSearchParams) => {
+        next.delete("page");
+        const query = next.toString();
+        router.replace(query ? `/properties?${query}` : "/properties");
+    };
 
     const handleFilter = () => {
-        const params = new URLSearchParams(
-            searchParams.toString()
-        );
+        const params = new URLSearchParams(searchParams.toString());
 
-        if (location.trim()) {
-            params.set("location", location.trim());
-        } else {
-            params.delete("location");
-        }
+        if (location.trim()) params.set("location", location.trim());
+        else params.delete("location");
 
-        if (price.trim()) {
-            params.set("price", price.trim());
-        } else {
-            params.delete("price");
-        }
+        if (minPrice.trim()) params.set("minPrice", minPrice.trim());
+        else params.delete("minPrice");
 
-        if (type) {
-            params.set("type", type);
-        } else {
-            params.delete("type");
-        }
+        if (price.trim()) params.set("price", price.trim());
+        else params.delete("price");
 
-        params.delete("page");
+        if (type) params.set("type", type);
+        else params.delete("type");
 
-        const query = params.toString();
+        if (amenities) params.set("amenities", amenities);
+        else params.delete("amenities");
 
-        router.replace(
-            query
-                ? `/properties?${query}`
-                : "/properties"
-        );
+        applyParams(params);
     };
 
     const handleReset = () => {
         setLocation("");
+        setMinPrice("");
         setPrice("");
         setType("");
+        setAmenities("");
 
-        const params = new URLSearchParams(
-            searchParams.toString()
-        );
-
+        const params = new URLSearchParams(searchParams.toString());
         params.delete("location");
+        params.delete("minPrice");
         params.delete("price");
         params.delete("type");
+        params.delete("amenities");
         params.delete("page");
 
-        const query = params.toString();
-
-        router.replace(
-            query
-                ? `/properties?${query}`
-                : "/properties"
-        );
+        applyParams(params);
     };
 
     return (
         <div className="rounded-2xl border bg-card p-5 shadow-sm">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-
-                {/* Location */}
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                        Location
-                    </label>
-
+                    <label className="text-sm font-medium">Location</label>
                     <Input
                         value={location}
-                        onChange={(e) =>
-                            setLocation(e.target.value)
-                        }
+                        onChange={(e) => setLocation(e.target.value)}
                         placeholder="e.g. Dhaka"
                     />
                 </div>
 
-                {/* Price */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                        Max Price
-                    </label>
+                    <label className="text-sm font-medium">Min Price</label>
+                    <Input
+                        type="number"
+                        min="0"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value)}
+                        placeholder="e.g. 10000"
+                    />
+                </div>
 
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">Max Price</label>
                     <Input
                         type="number"
                         min="0"
                         value={price}
-                        onChange={(e) =>
-                            setPrice(e.target.value)
-                        }
+                        onChange={(e) => setPrice(e.target.value)}
                         placeholder="e.g. 25000"
                     />
                 </div>
 
-                {/* Type */}
                 <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                        Property Type
-                    </label>
-
+                    <label className="text-sm font-medium">Property Type</label>
                     <Select
-                        value={type}
+                        value={type || undefined}
                         onValueChange={setType}
                     >
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="All Types" />
                         </SelectTrigger>
-
                         <SelectContent>
-                            <SelectItem value="Apartment">
-                                Apartment
-                            </SelectItem>
-
-                            <SelectItem value="House">
-                                House
-                            </SelectItem>
-
-                            <SelectItem value="Villa">
-                                Villa
-                            </SelectItem>
-
-                            <SelectItem value="Duplex">
-                                Duplex
-                            </SelectItem>
-
-                            <SelectItem value="Studio">
-                                Studio
-                            </SelectItem>
+                            <SelectItem value="Apartment">Apartment</SelectItem>
+                            <SelectItem value="House">House</SelectItem>
+                            <SelectItem value="Villa">Villa</SelectItem>
+                            <SelectItem value="Duplex">Duplex</SelectItem>
+                            <SelectItem value="Studio">Studio</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
 
-                {/* Actions */}
-                <div className="flex items-end gap-2">
-                    <Button
-                        type="button"
-                        onClick={handleFilter}
-                        className="flex-1"
+                <div className="space-y-2">
+                    <label className="text-sm font-medium">Amenities</label>
+                    <Select
+                        value={amenities || undefined}
+                        onValueChange={setAmenities}
                     >
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Any amenity" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {AMENITIES.map((item) => (
+                                <SelectItem key={item} value={item}>
+                                    {item}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div className="flex items-end gap-2">
+                    <Button type="button" onClick={handleFilter} className="flex-1">
                         Apply Filter
                     </Button>
-
-                    <Button
-                        type="button"
-                        variant="outline"
-                        onClick={handleReset}
-                    >
+                    <Button type="button" variant="outline" onClick={handleReset}>
                         Reset
                     </Button>
                 </div>
-
             </div>
         </div>
     );

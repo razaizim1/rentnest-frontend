@@ -19,14 +19,8 @@ export const getMe = async () => {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${accessToken}`
-        }
-        ,
-        cache: "force-cache",
-        next: {
-            revalidate: 60 * 60 * 24,
-            tags: ["my-profile"]
-        }
-
+        },
+        cache: "no-store",
     })
     const result = await res.json();
     return result;

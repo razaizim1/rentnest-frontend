@@ -23,11 +23,17 @@ export default async function AdminDashboardPage() {
     ]);
 
     const totalUsers =
-        Number(usersResult?.data?.meta?.total || 0);
+        Number(
+            usersResult?.data?.meta?.total ||
+            usersResult?.meta?.total ||
+            0
+        );
 
     const totalProperties =
         Number(
-            propertiesResult?.data?.meta?.total || 0
+            propertiesResult?.meta?.total ||
+            propertiesResult?.data?.meta?.total ||
+            0
         );
 
     const rentals =

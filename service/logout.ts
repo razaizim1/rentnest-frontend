@@ -1,11 +1,25 @@
-"use server"
-import { revalidateTag } from "next/cache";
+"use server";
+
 import { cookies } from "next/headers";
 
 export const logout = async () => {
-    const cookieStore = await cookies();
-    cookieStore.delete("accessToken");
-    cookieStore.delete("refreshToken");
+    try {
+        const cookieStore = await cookies();
 
-    revalidateTag("my-profile", "max")
-}
+        cookieStore.delete("accessToken");
+        cookieStore.delete("refreshToken");
+
+        return {
+            success: true,
+            message: "Logged out successfully.",
+        };
+    } catch (error) {
+        console.error("Logout error:", error);
+
+        return {
+            success: false,
+            message:
+                "Unable to logout right now. Please try again.",
+        };
+    }
+};

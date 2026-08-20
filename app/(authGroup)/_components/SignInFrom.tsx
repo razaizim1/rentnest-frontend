@@ -5,13 +5,23 @@ import { Input } from '@/components/ui/input';
 import { singInFrom } from '../_actions/authAction';
 import { useActionState, useEffect } from 'react';
 import { toast } from 'sonner';
+import Link from 'next/link';
 
+const initialState = {
+    success: false,
+    statusCode: 0,
+    message: '',
+    data: {
+        accessToken: '',
+        refreshToken: '',
+    },
+}
 
 const SignInFrom = () => {
-    const [state, action, pending] = useActionState(singInFrom, false);
+    const [state, action, pending] = useActionState(singInFrom, initialState);
 
     useEffect(() => {
-        if (!state) {
+        if (!state || state.statusCode === 0) {
             return;
         }
         if (state.success) {
@@ -25,11 +35,17 @@ const SignInFrom = () => {
     return (
         <form action={action} className="space-y-4">
             <Card className="space-y-4 p-5">
-                <Input name="email" type="email" placeholder="Enter your email" required></Input>
-                <Input name="password" type="password" placeholder="Enter your password" required></Input>
-                <Button type="submit">{
-                    pending ? "Logging in..." : "Login"
-                }</Button>
+                <Input name="email" type="email" placeholder="Enter your email" required />
+                <Input name="password" type="password" placeholder="Enter your password" required />
+                <Button type="submit" className="w-full" disabled={pending}>
+                    {pending ? "Logging in..." : "Login"}
+                </Button>
+                <p className="text-center text-sm text-muted-foreground">
+                    Don&apos;t have an account?{" "}
+                    <Link href="/register" className="font-medium text-primary hover:underline">
+                        Register
+                    </Link>
+                </p>
             </Card>
         </form>
     );

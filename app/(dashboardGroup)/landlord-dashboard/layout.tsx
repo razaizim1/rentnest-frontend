@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function AdminDashboardLayout({
+export default function LandlordDashboardLayout({
     children,
 }: {
     children: React.ReactNode;
@@ -9,28 +9,22 @@ export default function AdminDashboardLayout({
         <div className="space-y-8">
             <div className="flex flex-wrap gap-2 rounded-2xl border bg-card p-2">
                 <Link
-                    href="/admin-dashboard"
+                    href="/landlord-dashboard"
                     className="rounded-xl px-4 py-2 text-sm font-medium hover:bg-muted"
                 >
-                    Dashboard
+                    Overview
                 </Link>
                 <Link
-                    href="/admin-dashboard/users"
-                    className="rounded-xl px-4 py-2 text-sm font-medium hover:bg-muted"
-                >
-                    Users
-                </Link>
-                <Link
-                    href="/admin-dashboard/properties"
+                    href="/landlord-dashboard/properties"
                     className="rounded-xl px-4 py-2 text-sm font-medium hover:bg-muted"
                 >
                     Properties
                 </Link>
                 <Link
-                    href="/admin-dashboard/rentals"
+                    href="/landlord-dashboard/requests"
                     className="rounded-xl px-4 py-2 text-sm font-medium hover:bg-muted"
                 >
-                    Rental Requests
+                    Requests
                 </Link>
             </div>
             {children}

@@ -3,6 +3,7 @@ import {
     Clock3,
     CircleCheck,
     Home,
+    Wallet,
 } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,12 +14,18 @@ export function LandlordStats({
     pendingRequests,
     approvedRequests,
     activeRequests,
+    earnings,
 }: LandlordStatsProps) {
     const stats = [
         {
             title: "Total Properties",
             value: totalProperties,
             icon: Building2,
+        },
+        {
+            title: "Active Requests",
+            value: activeRequests,
+            icon: Home,
         },
         {
             title: "Pending Requests",
@@ -31,14 +38,14 @@ export function LandlordStats({
             icon: CircleCheck,
         },
         {
-            title: "Active Rentals",
-            value: activeRequests,
-            icon: Home,
+            title: "Earnings",
+            value: `৳ ${earnings.toLocaleString()}`,
+            icon: Wallet,
         },
     ];
 
     return (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
             {stats.map((stat) => {
                 const Icon = stat.icon;
 
@@ -49,12 +56,10 @@ export function LandlordStats({
                                 <p className="text-sm text-muted-foreground">
                                     {stat.title}
                                 </p>
-
-                                <p className="mt-2 text-3xl font-bold">
+                                <p className="mt-2 text-2xl font-bold xl:text-3xl">
                                     {stat.value}
                                 </p>
                             </div>
-
                             <div className="rounded-xl bg-primary/10 p-3 text-primary">
                                 <Icon size={22} />
                             </div>

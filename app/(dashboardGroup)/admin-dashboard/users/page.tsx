@@ -1,9 +1,11 @@
 import { getAdminUsers } from "../_actions/getAdminUsers";
 import { AdminUserTable } from "../_components/AdminUserTable";
+import { AdminUserSearch } from "../_components/AdminUserSearch";
 
 type AdminUsersPageProps = {
     searchParams: Promise<{
         page?: string;
+        search?: string;
     }>;
 };
 
@@ -18,6 +20,7 @@ export default async function AdminUsersPage({
     const result = await getAdminUsers({
         page: currentPage,
         limit,
+        search: params.search,
     });
 
     if (!result.success) {
@@ -56,6 +59,8 @@ export default async function AdminUsersPage({
                 {total === 1 ? "user" : "users"} found
             </div>
 
+            <AdminUserSearch />
+
             <AdminUserTable users={users} />
 
             {/* Pagination */}
@@ -64,7 +69,7 @@ export default async function AdminUsersPage({
                     <a
                         href={
                             page > 1
-                                ? `/admin-dashboard/users?page=${page - 1}`
+                                ? `/admin-dashboard/users?page=${page - 1}${params.search ? `&search=${encodeURIComponent(params.search)}` : ""}`
                                 : "#"
                         }
                         className={
@@ -83,7 +88,7 @@ export default async function AdminUsersPage({
                     <a
                         href={
                             page < totalPages
-                                ? `/admin-dashboard/users?page=${page + 1}`
+                                ? `/admin-dashboard/users?page=${page + 1}${params.search ? `&search=${encodeURIComponent(params.search)}` : ""}`
                                 : "#"
                         }
                         className={

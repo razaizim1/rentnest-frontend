@@ -40,7 +40,7 @@ export const updateRentalRequest = async (
         }
 
         const res = await fetch(
-            `${process.env.BACKEND_API_URL}/api/rentals/${rentalId}/status`,
+            `${process.env.BACKEND_API_URL}/api/landlord/requests/${rentalId}`,
             {
                 method: "PATCH",
                 headers: {

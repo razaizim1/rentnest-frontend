@@ -19,7 +19,7 @@ export const getLandlordRequests = async () => {
         }
 
         const res = await fetch(
-            `${process.env.BACKEND_API_URL}/api/landlord/rentals`,
+            `${process.env.BACKEND_API_URL}/api/landlord/requests`,
             {
                 method: "GET",
                 headers: {

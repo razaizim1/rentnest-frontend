@@ -77,6 +77,16 @@ export const PropertyCard = ({
 
                 </div>
 
+                {property.amenities?.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                        {property.amenities.slice(0, 3).map((item) => (
+                            <Badge key={item} variant="outline">
+                                {item}
+                            </Badge>
+                        ))}
+                    </div>
+                )}
+
                 <Button
                     className="w-full"
                     asChild

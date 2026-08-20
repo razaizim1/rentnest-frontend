@@ -64,6 +64,7 @@ export const updateProperty = async (
                 .get("categoryId")
                 ?.toString(),
             amenities,
+            available: formData.get("available") === "on",
         };
 
         if (!payload.title) {

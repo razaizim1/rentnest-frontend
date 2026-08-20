@@ -166,4 +166,10 @@ APPROVED → Blue Badge (Shows "Pay Now" button)
 REJECTED → Red Badge
 ACTIVE → Green Badge (Shows "Leave Review" button)
 COMPLETED → Gray Badge
-Good luck! Build a blazing-fast, accessible, and beautiful Next.js frontend you're proud of. 🚀
+Good luck! Build a blazing-fast, accessible, and beautiful Next.js frontend you're proud of. 🚀// proxy.ts:16 - ❌ Problem
+const cookieStore = await cookies();
+// Fix: Use request.cookies for reading, response.cookies for writing// proxy.ts:16 - ❌ Problem
+const cookieStore = await cookies();
+// Fix: Use request.cookies for reading, response.cookies for writing// ❌ Current
+import { SelectValue } from 'radix-ui/select'
+// ✅ Should be from the shadcn select file or @radix-ui/react-select

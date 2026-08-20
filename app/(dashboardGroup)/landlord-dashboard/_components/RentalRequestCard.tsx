@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useTransition, useState } from "react";
 import {
     CalendarDays,
     CheckCircle2,
@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import Image from "next/image";
 
@@ -34,25 +35,30 @@ type RentalRequestCardProps = {
 export function RentalRequestCard({
     request,
 }: RentalRequestCardProps) {
+    const router = useRouter();
     const [pending, startTransition] = useTransition();
+    const [status, setStatus] = useState(request.status);
 
     const handleStatusUpdate = (
-        status: "APPROVED" | "REJECTED"
+        nextStatus: "APPROVED" | "REJECTED"
     ) => {
+        const previousStatus = status;
+        setStatus(nextStatus);
+
         startTransition(async () => {
             const result = await updateRentalRequest(
                 request.id,
-                status
+                nextStatus
             );
 
             if (!result.success) {
+                setStatus(previousStatus);
                 toast.error(result.message);
                 return;
             }
 
             toast.success(result.message);
-
-            window.location.reload();
+            router.refresh();
         });
     };
 
@@ -67,7 +73,7 @@ export function RentalRequestCard({
             label: "Approved",
             icon: CheckCircle2,
             className:
-                "border-emerald-200 bg-emerald-50 text-emerald-700",
+                "border-blue-200 bg-blue-50 text-blue-700",
         },
         REJECTED: {
             label: "Rejected",
@@ -79,7 +85,7 @@ export function RentalRequestCard({
             label: "Active",
             icon: CheckCircle2,
             className:
-                "border-blue-200 bg-blue-50 text-blue-700",
+                "border-green-200 bg-green-50 text-green-700",
         },
         COMPLETED: {
             label: "Completed",
@@ -89,12 +95,11 @@ export function RentalRequestCard({
         },
     };
 
-    const config = statusConfig[request.status];
+    const config = statusConfig[status];
     const StatusIcon = config.icon;
 
     return (
         <Card className="overflow-hidden rounded-2xl border shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md">
-            {/* Property Header */}
             <CardHeader className="p-0">
                 <div className="relative">
                     <Image
@@ -133,7 +138,6 @@ export function RentalRequestCard({
             </CardHeader>
 
             <CardContent className="space-y-5 p-5">
-                {/* Tenant */}
                 <div className="flex items-center gap-4">
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                         <User size={20} />
@@ -156,7 +160,6 @@ export function RentalRequestCard({
 
                 <Separator />
 
-                {/* Rental Information */}
                 <div className="grid grid-cols-2 gap-4">
                     <div className="rounded-xl bg-muted/40 p-4">
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -185,7 +188,6 @@ export function RentalRequestCard({
                     </div>
                 </div>
 
-                {/* Tenant Message */}
                 {request.message && (
                     <div className="rounded-xl border bg-background p-4">
                         <p className="text-sm font-medium">
@@ -198,8 +200,7 @@ export function RentalRequestCard({
                     </div>
                 )}
 
-                {/* Actions */}
-                {request.status === "PENDING" && (
+                {status === "PENDING" && (
                     <div className="grid grid-cols-2 gap-3 pt-1">
                         <Button
                             disabled={pending}
@@ -225,14 +226,14 @@ export function RentalRequestCard({
                     </div>
                 )}
 
-                {request.status === "APPROVED" && (
-                    <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                {status === "APPROVED" && (
+                    <div className="flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
                         <CheckCircle2 size={18} />
-                        This rental request has been approved.
+                        Request approved. The tenant can now pay.
                     </div>
                 )}
 
-                {request.status === "REJECTED" && (
+                {status === "REJECTED" && (
                     <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                         <XCircle size={18} />
                         This rental request has been rejected.

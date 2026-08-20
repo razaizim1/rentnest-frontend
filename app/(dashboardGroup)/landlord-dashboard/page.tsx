@@ -1,8 +1,10 @@
+import { IRentalRequest } from "@/lib/types";
 import { getCategories } from "./_actions/getCategories";
 import { getLandlordProperties } from "./_actions/getLandlordProperties";
 import { getLandlordRequests } from "./_actions/getLandlordRequests";
 import { LandlordQuickActions } from "./_components/LandlordQuickActions";
 import { LandlordStats } from "./_components/LandlordStats";
+import { TenantHistory } from "./_components/TenantHistory";
 
 export default async function LandlordDashboardPage() {
     const [
@@ -28,25 +30,30 @@ export default async function LandlordDashboardPage() {
     }
 
     const properties = propertyResult?.data ?? [];
-    const requests = requestResult?.data ?? [];
+    const requests: IRentalRequest[] = requestResult?.data ?? [];
     const categories = categoryResult?.data ?? [];
 
     const totalProperties = properties.length;
 
     const pendingRequests = requests.filter(
-        (request: { status: string }) =>
-            request.status === "PENDING"
+        (request) => request.status === "PENDING"
     ).length;
 
     const approvedRequests = requests.filter(
-        (request: { status: string }) =>
-            request.status === "APPROVED"
+        (request) => request.status === "APPROVED"
     ).length;
 
     const activeRequests = requests.filter(
-        (request: { status: string }) =>
-            request.status === "ACTIVE"
+        (request) => request.status === "ACTIVE"
     ).length;
+
+    const earnings = requests
+        .filter((request) => request.payment?.status === "COMPLETED")
+        .reduce(
+            (total, request) =>
+                total + (request.payment?.amount ?? request.property.rentAmount),
+            0
+        );
 
     return (
         <div className="space-y-8">
@@ -69,11 +76,14 @@ export default async function LandlordDashboardPage() {
                 pendingRequests={pendingRequests}
                 approvedRequests={approvedRequests}
                 activeRequests={activeRequests}
+                earnings={earnings}
             />
 
             <LandlordQuickActions
                 categories={categories}
             />
+
+            <TenantHistory requests={requests} />
         </div>
     );
 }

@@ -1,12 +1,14 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 export type RentalState = {
     success: boolean;
     message: string;
     statusCode?: number;
 };
+
 
 export const createRental = async (
     _prevState: RentalState,
@@ -71,6 +73,9 @@ export const createRental = async (
                     "Failed to submit rental request.",
             };
         }
+
+        revalidatePath("/dashboard");
+        revalidatePath(`/properties/${payload.propertyId}`);
 
         return {
             success: true,

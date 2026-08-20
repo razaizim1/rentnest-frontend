@@ -8,6 +8,7 @@ import { CalendarDays } from "lucide-react";
 import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { createRental } from "../../_actions/createRental";
+import { useRouter } from "next/navigation";
 
 type RentalRequestFormProps = {
     propertyId: string;
@@ -17,6 +18,7 @@ export const RentalRequestForm = ({
     propertyId,
 }: RentalRequestFormProps) => {
 
+    const router = useRouter();
     const [state, action, pending] = useActionState(
         createRental,
         {
@@ -30,10 +32,12 @@ export const RentalRequestForm = ({
 
         if (state.success) {
             toast.success(state.message);
+            router.push("/dashboard");
+            router.refresh();
         } else {
             toast.error(state.message);
         }
-    }, [state]);
+    }, [state, router]);
     return (
         <form action={action} className="space-y-5">
 
@@ -83,6 +87,7 @@ export const RentalRequestForm = ({
             <Button
                 type="submit"
                 className="h-11 w-full"
+                disabled={pending}
             >
                 {pending ? "Submitting..." : "Submit Rental Request"}
             </Button>

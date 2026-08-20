@@ -16,6 +16,8 @@ export default async function PropertiesPage({
         search: params.search,
         location: params.location,
         price: params.price,
+        minPrice: params.minPrice,
+        amenities: params.amenities,
         type: params.type,
         page: params.page || "1",
         limit: params.limit || "6",
@@ -36,6 +38,8 @@ export default async function PropertiesPage({
         Boolean(params.search) ||
         Boolean(params.location) ||
         Boolean(params.price) ||
+        Boolean(params.minPrice) ||
+        Boolean(params.amenities) ||
         Boolean(params.type);
 
     return (

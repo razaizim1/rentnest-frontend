@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +37,7 @@ type AdminUserTableProps = {
 export function AdminUserTable({
     users,
 }: AdminUserTableProps) {
+    const router = useRouter();
     const [pending, startTransition] = useTransition();
 
     const [selectedUser, setSelectedUser] =
@@ -67,6 +69,7 @@ export function AdminUserTable({
 
                 setDialogOpen(false);
                 setSelectedUser(null);
+                router.refresh();
             } else {
                 toast.error(result.message);
             }

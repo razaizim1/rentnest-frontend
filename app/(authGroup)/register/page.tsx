@@ -13,9 +13,9 @@ const RegisterPage = () => {
 
           {/* FORM GENERIC TEXTS */}
           <div className="space-y-2 text-center">
-            <h1 className="font-bold text-3xl">Welcome Back!</h1>
+            <h1 className="font-bold text-3xl">Create your account</h1>
             <p className="text-gray-500">
-              Enter your credentials to access your account
+              Choose a role and start using RentNest
             </p>
           </div>
 

@@ -20,12 +20,13 @@ export const checkRentalStatus = async (
                 data: {
                     hasRequested: false,
                     status: null,
+                    rentalRequestId: null,
                 },
             };
         }
 
         const res = await fetch(
-            `${process.env.BACKEND_API_URL}/api/rentals/status/${propertyId}`,
+            `${process.env.BACKEND_API_URL}/api/check/${propertyId}`,
             {
                 method: "GET",
                 headers: {
@@ -47,6 +48,7 @@ export const checkRentalStatus = async (
                 data: {
                     hasRequested: false,
                     status: null,
+                    rentalRequestId: null,
                 },
             };
         }
@@ -62,6 +64,10 @@ export const checkRentalStatus = async (
                     result.data?.hasRequested ?? false,
                 status:
                     result.data?.status ?? null,
+                rentalRequestId:
+                    result.data?.rentalRequestId ??
+                    result.data?.id ??
+                    null,
             },
         };
     } catch (error) {
@@ -78,6 +84,7 @@ export const checkRentalStatus = async (
             data: {
                 hasRequested: false,
                 status: null,
+                rentalRequestId: null,
             },
         };
     }

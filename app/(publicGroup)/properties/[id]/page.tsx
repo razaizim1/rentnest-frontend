@@ -5,8 +5,11 @@ import {
     BedDouble,
     Building2,
     Check,
+    Mail,
     MapPin,
     Maximize,
+    Phone,
+    User,
 } from "lucide-react";
 import { notFound } from "next/navigation";
 
@@ -22,13 +25,14 @@ import { ParamsWithId } from "@/lib/types";
 import { getMe } from "@/service/getMe";
 import { checkRentalStatus } from "@/app/(dashboardGroup)/dashboard/_actions/checkRentalStatus";
 import { ReviewSection } from "../../_components/property/ReviewSection";
+import { PropertyGallery } from "../../_components/property/PropertyGallery";
+import { PayButton } from "../../_components/payment/PayButton";
 
 export default async function PropertyDetailsPage({
     params,
 }: ParamsWithId) {
     const { id } = await params;
 
-    // Property
     const result = await getProperty(id);
 
     if (!result?.data) {
@@ -36,124 +40,86 @@ export default async function PropertyDetailsPage({
     }
 
     const property = result.data;
-
-    // Current user
     const userResult = await getMe();
     const user = userResult?.data;
 
-    // Rental status only for logged-in user
     let hasRequested = false;
     let status: string | null = null;
+    let rentalRequestId: string | null = null;
 
     if (user) {
         const rentalStatus = await checkRentalStatus(id);
 
-        hasRequested =
-            rentalStatus?.data?.hasRequested ?? false;
-
-        status =
-            rentalStatus?.data?.status ?? null;
+        hasRequested = rentalStatus?.data?.hasRequested ?? false;
+        status = rentalStatus?.data?.status ?? null;
+        rentalRequestId = rentalStatus?.data?.rentalRequestId ?? null;
     }
 
     return (
         <main className="min-h-screen bg-muted/20">
             <div className="container mx-auto px-4 py-8 sm:py-10">
-
-                {/* Back */}
                 <div className="mb-6">
-                    <Button
-                        variant="ghost"
-                        asChild
-                        className="-ml-2"
-                    >
-                        <Link href="/dashboard">
-                            ← Back to Dashboard
+                    <Button variant="ghost" asChild className="-ml-2">
+                        <Link href="/properties">
+                            ← Back to Properties
                         </Link>
                     </Button>
                 </div>
 
-                {/* Main Property Section */}
-                <section className="overflow-hidden rounded-3xl border bg-background shadow-sm">
-                    <div className="grid lg:grid-cols-2">
+                <PropertyGallery
+                    image={property.image}
+                    title={property.title}
+                    category={property.category?.name}
+                />
 
-                        {/* Image */}
-                        <div className="relative min-h-[320px] lg:min-h-[680px]">
-                            <Image
-                                src={property.image}
-                                alt={property.title}
-                                fill
-                                priority
-                                sizes="(max-width: 1024px) 100vw, 50vw"
-                                className="object-cover"
-                            />
+                <section className="mt-8 overflow-hidden rounded-3xl border bg-background shadow-sm">
+                    <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1.4fr_0.8fr] lg:p-10">
+                        <div>
+                            <Badge variant="secondary">
+                                {property.category.name}
+                            </Badge>
 
-                            {/* Overlay */}
-                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent p-6 lg:p-8">
-                                <Badge className="border-0 bg-white/95 text-foreground hover:bg-white/95">
-                                    {property.category.name}
-                                </Badge>
+                            <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
+                                {property.title}
+                            </h1>
+
+                            <div className="mt-3 flex items-center gap-2 text-muted-foreground">
+                                <MapPin size={18} className="shrink-0" />
+                                <span>
+                                    {property.address
+                                        ? `${property.address}, ${property.location}`
+                                        : property.location}
+                                </span>
                             </div>
-                        </div>
 
-                        {/* Details */}
-                        <div className="flex flex-col p-6 sm:p-8 lg:p-10">
-
-                            {/* Header */}
-                            <div>
-                                <Badge variant="secondary">
-                                    {property.category.name}
-                                </Badge>
-
-                                <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
-                                    {property.title}
-                                </h1>
-
-                                <div className="mt-3 flex items-center gap-2 text-muted-foreground">
-                                    <MapPin
-                                        size={18}
-                                        className="shrink-0"
-                                    />
-                                    <span>
-                                        {property.location}
+                            <div className="mt-6">
+                                <p className="text-sm text-muted-foreground">
+                                    Monthly Rent
+                                </p>
+                                <h2 className="mt-1 text-3xl font-bold text-primary sm:text-4xl">
+                                    ৳ {property.rentAmount.toLocaleString()}
+                                    <span className="ml-1 text-base font-normal text-muted-foreground">
+                                        / month
                                     </span>
-                                </div>
-
-                                <div className="mt-6">
-                                    <p className="text-sm text-muted-foreground">
-                                        Monthly Rent
-                                    </p>
-
-                                    <h2 className="mt-1 text-3xl font-bold text-primary sm:text-4xl">
-                                        ৳{" "}
-                                        {property.rentAmount.toLocaleString()}
-
-                                        <span className="ml-1 text-base font-normal text-muted-foreground">
-                                            / month
-                                        </span>
-                                    </h2>
-                                </div>
+                                </h2>
                             </div>
 
-                            {/* Features */}
-                            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
+                            <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
                                 <FeatureCard
                                     icon={<BedDouble />}
                                     label="Bedrooms"
                                     value={property.bedrooms}
                                 />
-
                                 <FeatureCard
                                     icon={<Bath />}
                                     label="Bathrooms"
                                     value={property.bathrooms}
                                 />
-
                                 <FeatureCard
                                     icon={<Maximize />}
                                     label="Area"
                                     value={`${property.area} sqft`}
                                 />
-
                                 <FeatureCard
                                     icon={<Building2 />}
                                     label="Type"
@@ -161,39 +127,30 @@ export default async function PropertyDetailsPage({
                                 />
                             </div>
 
-                            {/* Description */}
                             <div className="mt-8">
                                 <h3 className="text-lg font-semibold">
                                     About this property
                                 </h3>
-
                                 <p className="mt-3 leading-7 text-muted-foreground">
                                     {property.description}
                                 </p>
                             </div>
 
-                            {/* Amenities */}
                             <div className="mt-8">
-                                <h3 className="text-lg font-semibold">
-                                    Amenities
-                                </h3>
-
+                                <h3 className="text-lg font-semibold">Amenities</h3>
                                 {property.amenities?.length > 0 ? (
                                     <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                                        {property.amenities.map(
-                                            (item: string) => (
-                                                <div
-                                                    key={item}
-                                                    className="flex items-center gap-2 text-sm text-muted-foreground"
-                                                >
-                                                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
-                                                        <Check size={15} />
-                                                    </span>
-
-                                                    <span>{item}</span>
-                                                </div>
-                                            )
-                                        )}
+                                        {property.amenities.map((item: string) => (
+                                            <div
+                                                key={item}
+                                                className="flex items-center gap-2 text-sm text-muted-foreground"
+                                            >
+                                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
+                                                    <Check size={15} />
+                                                </span>
+                                                <span>{item}</span>
+                                            </div>
+                                        ))}
                                     </div>
                                 ) : (
                                     <p className="mt-3 text-sm text-muted-foreground">
@@ -201,82 +158,111 @@ export default async function PropertyDetailsPage({
                                     </p>
                                 )}
                             </div>
+                        </div>
 
-                            {/* Rental Action */}
-                            <div className="mt-auto pt-8">
+                        <div className="space-y-6">
+                            <Card className="rounded-2xl shadow-none">
+                                <CardContent className="space-y-4 p-6">
+                                    <h3 className="text-lg font-semibold">Landlord</h3>
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-primary">
+                                            {property.landlord?.avatar ? (
+                                                <Image
+                                                    src={property.landlord.avatar}
+                                                    alt={property.landlord.name}
+                                                    width={48}
+                                                    height={48}
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            ) : (
+                                                <User size={20} />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <p className="font-semibold">
+                                                {property.landlord?.name || "Property owner"}
+                                            </p>
+                                            <p className="text-sm text-muted-foreground">
+                                                Verified landlord
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {property.landlord?.email && (
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                            <Mail size={16} />
+                                            {property.landlord.email}
+                                        </div>
+                                    )}
+                                    {property.landlord?.phone && (
+                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                            <Phone size={16} />
+                                            {property.landlord.phone}
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
 
-                                {/* Logged out */}
-                                {!user && (
-                                    <Button
-                                        asChild
-                                        className="h-12 w-full rounded-xl text-base"
-                                    >
-                                        <Link href="/login">
-                                            Login to Request
-                                        </Link>
-                                    </Button>
-                                )}
+                            <Card className="rounded-2xl shadow-none">
+                                <CardContent className="space-y-4 p-6">
+                                    <h3 className="text-lg font-semibold">
+                                        Request this rental
+                                    </h3>
 
-                                {/* Tenant can request */}
-                                {user?.role === "TENANT" &&
-                                    !hasRequested && (
-                                        <Button
-                                            asChild
-                                            className="h-12 w-full rounded-xl text-base"
-                                        >
-                                            <Link
-                                                href={`/properties/${id}/rent`}
-                                            >
-                                                Request Rental
+                                    {!user && (
+                                        <Button asChild className="h-12 w-full rounded-xl text-base">
+                                            <Link href="/login">Login to Request</Link>
+                                        </Button>
+                                    )}
+
+                                    {user?.role === "TENANT" && !hasRequested && (
+                                        <Button asChild className="h-12 w-full rounded-xl text-base">
+                                            <Link href={`/properties/${id}/rent`}>
+                                                Request to Rent
                                             </Link>
                                         </Button>
                                     )}
 
-                                {/* Pending */}
-                                {user?.role === "TENANT" &&
-                                    hasRequested &&
-                                    status === "PENDING" && (
-                                        <Button
-                                            disabled
-                                            className="h-12 w-full rounded-xl"
-                                        >
-                                            Request Sent
-                                        </Button>
-                                    )}
+                                    {user?.role === "TENANT" &&
+                                        hasRequested &&
+                                        status === "PENDING" && (
+                                            <Button disabled className="h-12 w-full rounded-xl">
+                                                Request Sent
+                                            </Button>
+                                        )}
 
-                                {/* Approved */}
-                                {user?.role === "TENANT" &&
-                                    hasRequested &&
-                                    status === "APPROVED" && (
-                                        <Button
-                                            disabled
-                                            className="h-12 w-full rounded-xl"
-                                        >
-                                            Rental Approved
-                                        </Button>
-                                    )}
+                                    {user?.role === "TENANT" &&
+                                        hasRequested &&
+                                        status === "APPROVED" &&
+                                        rentalRequestId && (
+                                            <div className="space-y-3">
+                                                <p className="text-sm text-muted-foreground">
+                                                    Your request was approved. Complete payment to confirm the rental.
+                                                </p>
+                                                <PayButton rentalRequestId={rentalRequestId} />
+                                            </div>
+                                        )}
 
-                                {/* Rejected */}
-                                {user?.role === "TENANT" &&
-                                    hasRequested &&
-                                    status === "REJECTED" && (
-                                        <Button
-                                            asChild
-                                            className="h-12 w-full rounded-xl text-base"
-                                        >
-                                            <Link
-                                                href={`/properties/${id}/rent`}
-                                            >
-                                                Request Again
-                                            </Link>
-                                        </Button>
+                                    {user?.role === "TENANT" &&
+                                        hasRequested &&
+                                        status === "REJECTED" && (
+                                            <Button asChild className="h-12 w-full rounded-xl text-base">
+                                                <Link href={`/properties/${id}/rent`}>
+                                                    Request Again
+                                                </Link>
+                                            </Button>
+                                        )}
+
+                                    {user && user.role !== "TENANT" && (
+                                        <p className="text-sm text-muted-foreground">
+                                            Only tenant accounts can submit rental requests.
+                                        </p>
                                     )}
-                            </div>
+                                </CardContent>
+                            </Card>
                         </div>
                     </div>
                 </section>
 
-                {/* Reviews - FULL WIDTH */}
                 <section className="mt-10 rounded-3xl border bg-background p-6 shadow-sm sm:p-8">
                     <ReviewSection
                         propertyId={id}
@@ -307,15 +293,9 @@ function FeatureCard({
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     {icon}
                 </div>
-
                 <div className="min-w-0">
-                    <p className="text-xs text-muted-foreground">
-                        {label}
-                    </p>
-
-                    <p className="mt-1 truncate font-semibold">
-                        {value}
-                    </p>
+                    <p className="text-xs text-muted-foreground">{label}</p>
+                    <p className="mt-1 truncate font-semibold">{value}</p>
                 </div>
             </CardContent>
         </Card>

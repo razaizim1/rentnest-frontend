@@ -14,12 +14,11 @@ BACKEND_API_URL=https://your-backend-url.com
 
 | Frontend Feature | Frontend Location | HTTP Method | Backend Endpoint | Auth |
 |---|---|---:|---|---|
-| User Registration | Registration Form / `registerForm` | POST | `/api/auth/register` | Public |
-| User Login | Login Form / `singInFrom` | POST | `/api/auth/login` | Public |
+| User Registration | `RegistrationForm` / `registerForm` | POST | `/api/auth/register` | Public |
+| User Login | `SignInFrom` / `singInFrom` | POST | `/api/auth/login` | Public |
 | Current User | `getMe` | GET | `/api/users/profile` | Required |
-| Logout | `logout` action | POST/GET* | Backend logout endpoint | Required |
-
-> *Use the exact HTTP method implemented by the backend logout endpoint.
+| Refresh Token | `getNewAccessToken` | POST | `/api/auth/refresh-token` | Cookie |
+| Logout | `logout` action | Client cookie clear | N/A | Required |
 
 ## Property APIs
 
@@ -27,56 +26,53 @@ BACKEND_API_URL=https://your-backend-url.com
 |---|---|---:|---|---|
 | Property Listing | `getProperties`, `PropertyGrid` | GET | `/api/properties` | Public |
 | Property Search | `PropertySearch` + `getProperties` | GET | `/api/properties?search=...` | Public |
-| Property Filter | `PropertyFilter` + `getProperties` | GET | `/api/properties?location=...&price=...&type=...` | Public |
-| Property Pagination | `PropertyPagination` + `getProperties` | GET | `/api/properties?page=...&limit=...` | Public |
+| Property Filter | `PropertyFilter` + `getProperties` | GET | `/api/properties?location=&minPrice=&price=&type=&amenities=` | Public |
+| Property Pagination | `PropertyPagination` + `getProperties` | GET | `/api/properties?page=&limit=` | Public |
 | Property Details | `getProperty` | GET | `/api/properties/:id` | Public |
 | Property Reviews | `getPropertyReviews` / `ReviewSection` | GET | `/api/properties/:id/reviews` | Public |
+| Categories | `getCategories` | GET | `/api/categories` | Public |
 
 ## Tenant APIs
 
 | Frontend Feature | Frontend Location | HTTP Method | Backend Endpoint | Auth |
 |---|---|---:|---|---|
-| Create Rental Request | Rental Request Form / rental action | POST | `/api/rentals` | Tenant |
-| My Rental Requests | Tenant Dashboard / rental action | GET | `/api/rentals` | Tenant |
-| Single Rental Request | Rental details action | GET | `/api/rentals/:id` | Tenant |
-| Check Rental Status | `checkRentalStatus` | GET | `/api/rentals/status/:propertyId`* | Tenant |
+| Create Rental Request | `RentalRequestForm` / `createRental` | POST | `/api/rentals` | Tenant |
+| My Rental Requests | Tenant Dashboard / `getMyRentals` | GET | `/api/rentals` | Tenant |
+| Check Rental Status | `checkRentalStatus` | GET | `/api/check/:propertyId` | Tenant |
 | Create Review | `createReview` / `ReviewForm` | POST | `/api/reviews` | Tenant |
 | Delete Own Review | `deleteReview` / `ReviewItem` | DELETE | `/api/reviews/:id` | Tenant |
-
-> *Use the exact route implemented by the backend for rental-status checking.
 
 ## Payment APIs
 
 | Frontend Feature | Frontend Location | HTTP Method | Backend Endpoint | Auth |
 |---|---|---:|---|---|
 | Create Stripe Checkout Session | `createPayment` / `PayButton` | POST | `/api/payments/create` | Tenant |
-| Stripe Success Redirect | `/payment/success` | GET | Stripe redirect URL | N/A |
-| Stripe Cancel Redirect | `/payment/cancel` | GET | Stripe redirect URL | N/A |
-| Stripe Webhook | Backend only | POST | Configured Stripe webhook endpoint | Stripe |
+| Stripe Success Redirect | `/payment/success` | GET | Stripe `success_url` | Public |
+| Stripe Cancel Redirect | `/payment/cancel` | GET | Stripe `cancel_url` | Public |
+| Stripe Webhook | Backend only | POST | `/api/payments/webhook` | Stripe |
 
 ## Landlord APIs
 
 | Frontend Feature | Frontend Location | HTTP Method | Backend Endpoint | Auth |
 |---|---|---:|---|---|
 | Create Property | `CreatePropertyForm` / `createProperty` | POST | `/api/landlord/properties` | Landlord |
-| My Properties | `getMyProperties` | GET | `/api/landlord/properties` | Landlord |
-| Update Property | Edit Property form / `updateProperty` | PUT | `/api/landlord/properties/:id` | Landlord |
+| My Properties | `getMyProperties` / `getLandlordProperties` | GET | `/api/landlord/properties` | Landlord |
+| Update Property | `EditPropertyForm` / `updateProperty` | PUT | `/api/landlord/properties/:id` | Landlord |
+| Availability Toggle | `AvailabilityToggle` | PUT | `/api/landlord/properties/:id` | Landlord |
 | Delete Property | `DeletePropertyButton` / `deleteProperty` | DELETE | `/api/landlord/properties/:id` | Landlord |
-| Incoming Rental Requests | `getLandlordRequests` | GET | `/api/landlord/rentals`* | Landlord |
-| Approve/Reject Rental Request | `updateRentalRequest` | PATCH/PUT* | `/api/landlord/rentals/:id`* | Landlord |
-
-> *Use the exact endpoint and HTTP method implemented by the backend if it differs from the examples above.
+| Incoming Rental Requests | `getLandlordRequests` | GET | `/api/landlord/requests` | Landlord |
+| Approve/Reject Rental Request | `updateRentalRequest` | PATCH | `/api/landlord/requests/:id` | Landlord |
 
 ## Admin APIs
 
 | Frontend Feature | Frontend Location | HTTP Method | Backend Endpoint | Auth |
 |---|---|---:|---|---|
 | Admin User List | `getAdminUsers` / `AdminUserTable` | GET | `/api/admin/users` | Admin |
-| Admin User Pagination | `AdminUsersPage` | GET | `/api/admin/users?page=...&limit=...` | Admin |
-| Admin User Search | Admin Users page | GET | `/api/admin/users?search=...` | Admin |
+| Admin User Pagination | Admin Users page | GET | `/api/admin/users?page=&limit=` | Admin |
+| Admin User Search | `AdminUserSearch` | GET | `/api/admin/users?search=` | Admin |
 | Ban / Unban User | `updateUserStatus` / `AdminUserTable` | PATCH | `/api/admin/users/:id` | Admin |
 | Admin Property List | `getAdminProperties` / `AdminPropertyTable` | GET | `/api/admin/properties` | Admin |
-| Admin Property Pagination | Admin Properties page | GET | `/api/admin/properties?page=...&limit=...` | Admin |
+| Admin Property Pagination | Admin Properties page | GET | `/api/admin/properties?page=&limit=` | Admin |
 | Admin Rental Requests | `getAdminRentals` / `AdminRentalTable` | GET | `/api/admin/rentals` | Admin |
 
 ## Request Handling
@@ -89,7 +85,7 @@ Authorization: Bearer <accessToken>
 
 ## Error Handling
 
-Frontend server actions normalize API failures into a structured result where applicable:
+Frontend server actions normalize API failures into a structured result:
 
 ```ts
 {
@@ -99,16 +95,12 @@ Frontend server actions normalize API failures into a structured result where ap
 }
 ```
 
-Client components display user-facing errors using toast notifications and inline validation messages where appropriate.
-
-## Caching and Revalidation
-
-Public property data may use Next.js caching/revalidation where appropriate. After landlord mutations, affected routes are revalidated so updated property data can appear in listing and details pages.
+Client components display errors with toast notifications, inline validation, `error.tsx`, and `not-found.tsx`.
 
 ## Payment Flow
 
 ```text
-Tenant Dashboard
+Tenant Dashboard or Property Details
       ↓
 Pay Now
       ↓
@@ -129,4 +121,3 @@ Backend Stripe Webhook updates payment state
 | Tenant | Auth, Properties, Rentals, Reviews, Payments |
 | Landlord | Properties CRUD, Rental Requests |
 | Admin | Users, Properties, Rental Requests |
-

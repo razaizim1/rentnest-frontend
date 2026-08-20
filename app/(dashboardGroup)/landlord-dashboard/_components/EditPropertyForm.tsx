@@ -230,6 +230,23 @@ export function EditPropertyForm({
                     />
                 </div>
 
+                <label className="flex items-center gap-3 rounded-lg border p-4">
+                    <input
+                        type="checkbox"
+                        name="available"
+                        defaultChecked={property.available}
+                        className="h-4 w-4"
+                    />
+                    <span>
+                        <span className="block text-sm font-medium">
+                            Available for rent
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                            Uncheck to hide this listing from public search.
+                        </span>
+                    </span>
+                </label>
+
                 <div className="space-y-3">
                     <label className="text-sm font-medium">
                         Amenities

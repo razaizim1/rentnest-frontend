@@ -20,8 +20,16 @@ export const getProperties = async (
             searchParams.set("price", params.price);
         }
 
+        if (params.minPrice) {
+            searchParams.set("minPrice", params.minPrice);
+        }
+
         if (params.type) {
             searchParams.set("type", params.type);
+        }
+
+        if (params.amenities) {
+            searchParams.set("amenities", params.amenities);
         }
 
         if (params.page) {
