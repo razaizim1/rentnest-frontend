@@ -7,7 +7,7 @@ This document maps the RentNest frontend features and components to the backend 
 The frontend reads the backend URL from the environment variable:
 
 ```env
-BACKEND_API_URL=https://your-backend-url.com
+BACKEND_API_URL=https://rentnest-z3oc.onrender.com
 ```
 
 ## Authentication
